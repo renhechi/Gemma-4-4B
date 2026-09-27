@@ -93,6 +93,11 @@ conda run -n gemma3_env python3 scripts/eval_final.py --ckpt runs/E1-full/dose_1
 
 ## 7. 已知問題 / 待決
 
+**執行時間分析(2026-09-27)**:與 student-4B direct-CPT(246M tok / 5.3 天 / ~539 tok/s)相比,本實驗 token 量 6.4×(20× 以 78.6M FFN 參數計,而非 14M LoRA 參數),
+且每 token 需走完 41 層凍結 forward + 262k lm_head(只開最後層不省 forward)。seq 1024 實測僅 +7%(272 vs 255 tok/s @650MHz)→ 保留 4096,GPU 修復後重測(`scripts/bench_seqlen.py`)。
+重開機後 `@reboot scripts/boot_resume_g4.sh` 自動續跑 chain + sync;12B E1 的 @reboot 已註解停用(備份 logs/crontab_backup_20260927.txt)。
+
+
 1. **GX10 GPU 時脈卡在 ~650 MHz(最高 3003)**:bf16 matmul 僅 3.7 TFLOPs,訓練 ~250 tok/s ⇒ 1.573B 需 ~70 天。
    溫度正常、無 lock,SW Power Capping 計數持續累加、開機已 27 天。需 sudo:`sudo nvidia-smi -rgc` 或重開機後重測
    (`scripts/profile_speed.py`)。正常時脈預期提升 10× 以上。12B 軌道的 105 tok/s 很可能也受此影響。

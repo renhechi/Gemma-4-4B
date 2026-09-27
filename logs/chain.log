@@ -1,3 +1,6 @@
 [chain] 2026-09-27 00:37:30 start E3-full (try 1)
 [chain] 2026-09-27 08:14:09 stopped E3-full v0 at step 25 (switch to adaptive ε + early stop, user request)
 [chain] 2026-09-27 08:21:01 start E3-full (try 1)
+[chain] 2026-09-27 08:36:09 stopped E3-full v1 (seq 4096) → switch to seq_len 1024 (user: combine GPU fix + shorter seq)
+[chain] 2026-09-27 08:45:04 seq 1024 bench: 272 vs 255 tok/s (+7%) → keep 4096
+[chain] 2026-09-27 08:45:04 start E3-full (try 1)

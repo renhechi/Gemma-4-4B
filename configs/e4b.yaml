@@ -18,7 +18,7 @@ model:
 
 data:
   dfin_dir: /home/renhe/gemma4_pretrain/data/dfin      # build_dfin.py output
-  seq_len: 4096
+  seq_len: 4096                                        # 1024 benchmarked 2026-09-27: only +7% tok/s at 650MHz → kept 4096; re-bench after GPU clock fix
   n_val_seqs: 128                                      # fixed L_val set (≈0.5M tok)
   n_ref_seqs: 64                                       # learning-goal reference set R (disjoint from L_val set)
 
