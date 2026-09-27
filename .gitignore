@@ -1,0 +1,8 @@
+# large artifacts — kept on GX10 only
+models/
+data/
+runs/**/*.pt
+runs/**/*.tmp
+__pycache__/
+*.pyc
+scripts/_*.py

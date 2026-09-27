@@ -1,0 +1,9 @@
+[load] /home/renhe/gemma4_pretrain/models/gemma-4-E4B-it
+Loading weights:   0%|          | 0/2076 [00:00<?, ?it/s]Loading weights:  27%|██▋       | 562/2076 [00:00<00:00, 5561.50it/s]Loading weights:  54%|█████▍    | 1119/2076 [00:00<00:00, 4107.38it/s]Loading weights:  75%|███████▍  | 1552/2076 [00:00<00:00, 4123.73it/s]Loading weights:  95%|█████████▌| 1977/2076 [00:00<00:00, 4028.83it/s]Loading weights: 100%|██████████| 2076/2076 [00:00<00:00, 4048.56it/s]
+/home/renhe/gemma4_pretrain/scripts/train_lgdsrfpa.py:416: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  trainable_layer=tidx, p0=smlp.p0, w_sq_norm=float(smlp.sq_norm()),
+[run] E3-smoke mode=E3 steps=20 tok/step=16,384 D*=1.573B unique_train=1.958B p=10240 ‖w‖²=35296.1
+[E3-smoke] step 10/20 L_tr=4.7342 L_val=4.4908 viol=0/16 p=9984 Δp+=0 Δp-=256 rb=0 lam=1.10e-06 tok/s=204 mem=24.11GiB
+[E3-smoke] step 20/20 L_tr=4.7457 L_val=4.4604 viol=0/16 p=9728 Δp+=0 Δp-=512 rb=0 lam=1.22e-06 tok/s=204 mem=24.11GiB
+[done] E3-smoke step=20 p=9728 {'structuring_trigger_count': 0, 'delta_p_plus': 0, 'delta_p_minus': 512, 'rollback_count': 0, 'repair_attempts': 0, 'repair_success': 0, 'isolate_fail': 0, 'nt_rounds': 4, 'nt_fail_total': 0, 'struct_fail_streak': 0}

@@ -1,0 +1,6 @@
+[load] /home/renhe/gemma4_pretrain/models/gemma-4-E4B-it
+Loading weights:   0%|          | 0/2076 [00:00<?, ?it/s]Loading weights:  28%|██▊       | 582/2076 [00:00<00:00, 5780.21it/s]Loading weights:  56%|█████▌    | 1161/2076 [00:00<00:00, 1324.49it/s]Loading weights:  70%|██████▉   | 1450/2076 [00:01<00:00, 956.23it/s] Loading weights:  80%|████████  | 1667/2076 [00:01<00:00, 1104.38it/s]Loading weights:  91%|█████████ | 1883/2076 [00:01<00:00, 1260.54it/s]Loading weights: 100%|██████████| 2076/2076 [00:01<00:00, 1324.27it/s]
+/home/renhe/gemma4_pretrain/scripts/train_lgdsrfpa.py:422: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  f"‖w‖²={float(smlp.sq_norm()):.1f}", flush=True)
+[run] E3-full mode=E3 steps=6001 tok/step=262,144 D*=1.573B unique_train=1.958B p=10240 ‖w‖²=35296.1

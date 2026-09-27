@@ -1,0 +1,73 @@
+[collect]
+  news      +162,619
+  esg       +28,716
+  esg_ocr   +1,178
+  esg_ocr   +32,566
+  annual    +644,223
+  acad      +5,088
+  fin_news  +328
+  penalty   +499
+  law       (articles, no chunking)
+  ins_law   (articles, no chunking)
+  edgar     +119,622 (of 297,154 available)
+[dedup] kept 940,105 docs (heldout-excluded 130)
+[tok] encoding with 16 workers …
+  256/940,105 docs  0.6M tok
+  51,456/940,105 docs  107.6M tok
+  102,656/940,105 docs  214.6M tok
+  153,856/940,105 docs  321.8M tok
+  205,056/940,105 docs  429.0M tok
+  256,256/940,105 docs  536.1M tok
+  307,456/940,105 docs  643.3M tok
+  358,656/940,105 docs  750.4M tok
+  409,856/940,105 docs  857.6M tok
+  461,056/940,105 docs  964.8M tok
+  512,256/940,105 docs  1071.9M tok
+  563,456/940,105 docs  1179.4M tok
+  614,656/940,105 docs  1286.3M tok
+  665,856/940,105 docs  1393.5M tok
+  717,056/940,105 docs  1500.7M tok
+  768,256/940,105 docs  1608.0M tok
+  819,456/940,105 docs  1715.0M tok
+  870,656/940,105 docs  1822.2M tok
+  921,856/940,105 docs  1929.2M tok
+{
+  "tokenizer": "/home/renhe/gemma4_pretrain/models/gemma-4-E4B-it",
+  "n_docs": 940105,
+  "n_val_docs": 4700,
+  "total_tokens": 1967636259,
+  "val_tokens": 9890806,
+  "train_tokens": 1957745453,
+  "tokens_by_cat": {
+    "annual": 1527126156,
+    "edgar": 130165312,
+    "news": 163462695,
+    "esg": 63036327,
+    "esg_ocr": 70121627,
+    "acad": 10234324,
+    "fin_news": 559054,
+    "law": 559272,
+    "ins_law": 785780,
+    "penalty": 1585712
+  },
+  "cats": [
+    "acad",
+    "annual",
+    "edgar",
+    "esg",
+    "esg_ocr",
+    "fin_news",
+    "ins_law",
+    "law",
+    "news",
+    "penalty"
+  ],
+  "chunk_chars": 3000,
+  "upsample": {
+    "law": 4,
+    "ins_law": 4,
+    "penalty": 2
+  },
+  "heldout_excluded": 130,
+  "seed": 42
+}
