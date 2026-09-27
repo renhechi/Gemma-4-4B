@@ -53,7 +53,13 @@
   剪後仍滿足 learning goal → 接受(Δp⁻),否則回復 Snapshot(Fail+1);Fail ≥ F_max(5) 結束該輪。後續 Weight-Tuning 即在 L_N 下進行。
 - **λ 排程(ED §4.8)**:無違反且 L_val 未惡化 → λ×1.05;違反但修復成功 → 維持;違反持續或 L_val 惡化 → λ×0.7;範圍 [1e-8, 1e-4]。
 - **優化器狀態**:結構改變時 AdamW 動量按 channel 重新對應(保留存活 channel 的 m/v),非整體重置。
-- **Early stopping(ED §4.7)**:不作為主停止條件;只在 NaN、L_train EMA > 5× 最佳時安全停止。Plateau(ΔL_t < 1e-3 連續 3 次)只標註。
+- **停止規則(2026-09-27 使用者決定,沿用 12B E1-full 模式)**:
+  - 上限:**D* = 20 × N_FFN**(Chinchilla scaling law;N_FFN 於啟動時由模型實算 = 3·2560·10240 = 78.64M → 1.573B tokens = 6,001 步)。
+  - **Early stop**:L_val 每 25 步評估一次(12B 為 20),|ΔL_val| < 1e-3 連續 3 次 → 停止,另存 `stop_<frac>Dstar.pt`;warmup(100 步)前不停。
+  - 安全停止:NaN、L_train EMA > 5× 最佳、L_val > 5× 最佳。
+  - 註:此為對 ED §4.7「early stopping 不介入主觀測」之修正 — 在 GX10 算力限制下,以 plateau 決定實際觀測到的 dose,D* 為理論上限;論文中需說明此偏離。
+- **ε 自動下降(沿用 12B E1-full)**:ε 由 0.015 起,每次 learning-goal 檢核若無違反則 ε ← max(0.005, 0.95ε),一出現違反即維持。
+  避免固定 ε 過寬(v0 用 0.02,前 25 步漂移僅 0.006,E2/E3 永不觸發)或過窄;ε 軌跡記錄於 metrics(`epsilon`)。
 
 ## 5. 執行程序(ED §4.10)
 
@@ -66,6 +72,8 @@ conda run -n gemma3_env python3 scripts/train_lgdsrfpa.py --mode E3 --experiment
     --max-steps 20 --micro-batch 2 --grad-accum 2 --control-interval 5 --eval-interval 10 --n-val 8 --n-ref 16
 # 2) 正式:E3 → E1 → E2 依序(可中斷續跑)
 nohup bash scripts/run_chain.sh > logs/chain.log 2>&1 &
+# 2b) 紀錄自動推 GitHub(每小時:分析表/圖 + metrics + logs → renhechi/Gemma-4-4B)
+tmux new-session -d -s g4sync "bash scripts/sync_github.sh"
 # 3) 分析(E4 dose/plateau 表、模組統計、E5 可行性表、曲線圖 → docs/results/)
 conda run -n gemma3_env python3 scripts/analyze_runs.py E1-full E2-full E3-full
 # 4) 最終評估(一次):PPL、數值 QA、專業人士盲評包
@@ -88,5 +96,5 @@ conda run -n gemma3_env python3 scripts/eval_final.py --ckpt runs/E1-full/dose_1
 1. **GX10 GPU 時脈卡在 ~650 MHz(最高 3003)**:bf16 matmul 僅 3.7 TFLOPs,訓練 ~250 tok/s ⇒ 1.573B 需 ~70 天。
    溫度正常、無 lock,SW Power Capping 計數持續累加、開機已 27 天。需 sudo:`sudo nvidia-smi -rgc` 或重開機後重測
    (`scripts/profile_speed.py`)。正常時脈預期提升 10× 以上。12B 軌道的 105 tok/s 很可能也受此影響。
-2. ε 值(預設 0.02)待 smoke 前導篩選確認。
+2. ε 改為自動下降(0.015 → 下限 0.005),見 §4。v0(固定 ε=0.02)於 step 25 停止並封存為 `runs/E3-full_v0_eps0.02/`。
 3. 年報占 D_fin 77.6%,是否設上限重建,屬研究設計決定。

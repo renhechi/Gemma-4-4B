@@ -23,7 +23,8 @@ data:
   n_ref_seqs: 64                                       # learning-goal reference set R (disjoint from L_val set)
 
 budget:
-  d_star_tokens: 1_573_000_000                         # 20 × 78.64M
+  chinchilla_ratio: 20                                 # D* = 20 × N_FFN (computed from the model at start)
+  d_star_tokens: 1_572_864_000                         # cross-check only: 20 × 3 × 2560 × 10240
   dose_checkpoints: [0.25, 0.50, 0.75, 1.00]           # ED §4.4 cumulative corpus-dose
 
 weight_tuning:                                         # Eq. 11–12; ED §4.2: L_CLM is the objective
@@ -36,12 +37,14 @@ weight_tuning:                                         # Eq. 11–12; ED §4.2: 
   grad_accum: 16                                       # 64 seq × 4096 = 262,144 tok / step
 
 learning_goal:                                         # Eq. 10: ‖z_c − z*_c‖ ≤ ε  (relative to ‖z*_c‖)
-  epsilon: 0.02                                        # set by pilot screening (ED §4.7), see docs
+  epsilon: 0.015                                       # start value (same as 12B E1-full)
+  epsilon_min: 0.005                                   # floor — never tighten below this
+  eta_eps_down: 0.95                                   # ε ← max(ε_min, 0.95ε) at each clean control check; hold on violation
   reference: base-mlp                                  # z*_c = F_L(x_c; w_0): exact, prefix frozen
 
 control:
   control_interval: 25                                 # opt-steps between learning-goal checks / module dispatch
-  eval_interval: 100                                   # opt-steps between L_val evals
+  eval_interval: 25                                    # opt-steps between L_val evals (12B E1-full: 20)
   save_every: 100
 
 structuring:                                           # Algo 1–4
@@ -59,6 +62,10 @@ network_tuning:                                        # Algo 4(WR)/5/6, ED §4.
   eta_up: 1.05                                         # η ∈ [1.02, 1.10]
   gamma_down: 0.70                                     # γ ∈ [0.50, 0.90]
   val_tolerance: 0.002                                 # "L_val 未惡化超過容許範圍"
+
+early_stop:                                            # user decision 2026-09-27: follow 12B E1-full
+  enabled: true                                        # stop at L_val plateau; D* = 20×N_FFN is the upper bound
+  min_steps: 100                                       # no stop before LR warmup ends
 
 plateau:                                               # ED §4.5
   delta_threshold: 1.0e-3

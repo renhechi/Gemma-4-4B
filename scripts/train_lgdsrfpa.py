@@ -131,7 +131,9 @@ class Controller:
     def __init__(self, cfg, mode, smlp: StructGatedFFN, base_mlp, x_ref: list[torch.Tensor],
                  log):
         self.cfg, self.mode, self.smlp, self.log = cfg, mode, smlp, log
-        self.eps = cfg["learning_goal"]["epsilon"]
+        lg = cfg["learning_goal"]
+        self.eps = lg["epsilon"]
+        self.eps_min, self.eta_eps_down = lg["epsilon_min"], lg["eta_eps_down"]
         st, nt = cfg["structuring"], cfg["network_tuning"]
         self.T_iso, self.max_adds, self.res_tgt = st["isolating_max_tries"], st["max_adds_per_round"], st["residual_target"]
         self.F_max, self.m_prune, self.max_acc = nt["F_max"], nt["prune_block"], nt["max_accepts_per_round"]
@@ -281,7 +283,10 @@ class Controller:
     def control(self, optimizer, val_delta: float | None) -> dict:
         dev = self.deviations()
         v = int((dev > self.eps).sum())
-        out = dict(ref_violations=v, dev_mean=float(dev.mean()), dev_max=float(dev.max()))
+        out = dict(ref_violations=v, dev_mean=float(dev.mean()), dev_max=float(dev.max()), epsilon=self.eps)
+        # adaptive ε (same rule as 12B E1-full): tighten ×η when clean, hold once any violation
+        if v == 0:
+            self.eps = max(self.eps_min, self.eps * self.eta_eps_down)
         if v > 0:
             self.c["structuring_trigger_count"] += 1
             if self.mode in ("E2", "E3"):
@@ -336,6 +341,8 @@ def main() -> int:
     ap.add_argument("--grad-accum", type=int)
     ap.add_argument("--n-val", type=int)
     ap.add_argument("--n-ref", type=int)
+    ap.add_argument("--min-stop-steps", type=int, help="test only: early-stop min_steps")
+    ap.add_argument("--plateau-delta", type=float, help="test only: plateau ΔL threshold")
     args = ap.parse_args()
 
     cfg = yaml.safe_load(Path(args.config).read_text())
@@ -347,6 +354,8 @@ def main() -> int:
     if args.grad_accum: wt["grad_accum"] = args.grad_accum
     if args.n_val: cfg["data"]["n_val_seqs"] = args.n_val
     if args.n_ref: cfg["data"]["n_ref_seqs"] = args.n_ref
+    if args.min_stop_steps is not None: cfg["early_stop"]["min_steps"] = args.min_stop_steps
+    if args.plateau_delta: cfg["plateau"]["delta_threshold"] = args.plateau_delta
 
     seed = cfg["run"]["seed"]
     random.seed(seed); np.random.seed(seed); torch.manual_seed(seed)
@@ -362,10 +371,8 @@ def main() -> int:
 
     T, mb, accum = cfg["data"]["seq_len"], wt["micro_batch"], wt["grad_accum"]
     tok_per_step = T * mb * accum
-    d_star = cfg["budget"]["d_star_tokens"]
-    total_steps = args.max_steps or math.ceil(d_star / tok_per_step)
-    dose_base = total_steps if args.max_steps else d_star / tok_per_step     # smoke: fractions of max_steps
-    dose_steps = {max(1, round(f * dose_base)): f for f in cfg["budget"]["dose_checkpoints"]}
+    d_star_cfg = cfg["budget"]["d_star_tokens"]
+    total_steps = None                                                   # set after model load (needs N_FFN)
 
     data = DFin(Path(cfg["data"]["dfin_dir"]), T)
     n_val, n_ref = cfg["data"]["n_val_seqs"], cfg["data"]["n_ref_seqs"]
@@ -377,6 +384,14 @@ def main() -> int:
     model, smlp, base_mlp, tidx = load_model(cfg, device)
     load_s = time.perf_counter() - t0
     cap = XCapture(smlp)
+    n_ffn = 3 * smlp.p0 * smlp.gate_w.shape[1]
+    d_star = cfg["budget"]["chinchilla_ratio"] * n_ffn                   # D* = 20 × N_FFN (scaling law)
+    if abs(d_star - d_star_cfg) / d_star_cfg > 0.01:
+        print(f"[warn] D* from model {d_star/1e9:.3f}B ≠ config {d_star_cfg/1e9:.3f}B", flush=True)
+    total_steps = args.max_steps or math.ceil(d_star / tok_per_step)
+    dose_base = total_steps if args.max_steps else d_star / tok_per_step     # smoke: fractions of max_steps
+    dose_steps = {max(1, round(f * dose_base)): f for f in cfg["budget"]["dose_checkpoints"]}
+    es = cfg["early_stop"]
 
     # reference set R: val sequences [n_val, n_val+n_ref) — cache MLP inputs once
     cap.on = True
@@ -397,6 +412,7 @@ def main() -> int:
     prev_val = None
     val_change = None
     plateau_streak = 0
+    best_val = math.inf
     wall0 = 0.0
     ck = out / "latest.pt"
     if ck.exists():
@@ -407,13 +423,15 @@ def main() -> int:
                                       weight_decay=0.0, fused=True)
         optimizer.load_state_dict(s["opt"])
         ctrl.c, ctrl.lam = s["counters"], s["lam"]
+        ctrl.eps = s.get("eps", ctrl.eps)
         step, prev_val, plateau_streak, best_ema, ema = s["step"], s["prev_val"], s["plateau_streak"], s["best_ema"], s["ema"]
         wall0 = s["wall"]
+        best_val = s.get("best_val", math.inf)
         torch.set_rng_state(s["rng"])
         print(f"[resume] step={step} p={smlp.p} lam={ctrl.lam:.2e}", flush=True)
     else:
         log(dict(event="run_start", config=cfg, total_steps=total_steps, tok_per_step=tok_per_step,
-                 d_star=d_star, unique_train_tokens=int(uniq_train), dfin_meta=data.meta,
+                 d_star=d_star, n_ffn=n_ffn, d_star_rule="chinchilla_ratio × N_FFN", unique_train_tokens=int(uniq_train), dfin_meta=data.meta,
                  trainable_layer=tidx, p0=smlp.p0, w_sq_norm=float(smlp.sq_norm().detach()),
                  load_seconds=round(load_s, 1), ref_dev_init=float(ctrl.deviations().max())))
 
@@ -462,7 +480,7 @@ def main() -> int:
         if step > 50 and ema > cfg["safety"]["divergence_factor"] * best_ema:
             stop_reason = "divergence"
 
-        row = dict(event="step", step=step, tokens_seen=step * tok_per_step, L_train=round(L_train, 5),
+        row = dict(event="step", step=step, tokens_seen=step * tok_per_step, L_train=round(L_train, 5), epsilon=ctrl.eps,
                    lr=lr, grad_norm=round(gn, 4), lam=ctrl.lam, p=smlp.p,
                    batch_violations=int((bdev > ctrl.eps).sum()), batch_dev_max=round(float(bdev.max()), 5))
 
@@ -480,6 +498,11 @@ def main() -> int:
                 ctrl.lam = max(ctrl.lam_min, ctrl.gam * ctrl.lam)          # §4.8: L_val worsened
             plateau_streak = plateau_streak + 1 if (dL is not None and dL < cfg["plateau"]["delta_threshold"]) else 0
             prev_val = L_val
+            best_val = min(best_val, L_val)
+            if es["enabled"] and step >= es["min_steps"] and plateau_streak >= cfg["plateau"]["consecutive_evals"]:
+                stop_reason = "early_stop_plateau"
+            if step > es["min_steps"] and L_val > cfg["safety"]["divergence_factor"] * best_val:
+                stop_reason = "divergence_val"
             dev = ctrl.deviations()
             el = time.perf_counter() - t_int
             free, total = torch.cuda.mem_get_info()
@@ -488,7 +511,8 @@ def main() -> int:
                        acceptability_rate=round(1 - float((dev > ctrl.eps).float().mean()), 4),
                        violation_count=int((dev > ctrl.eps).sum()), dev_mean=round(float(dev.mean()), 5),
                        plateau=plateau_streak >= cfg["plateau"]["consecutive_evals"],
-                       plateau_streak=plateau_streak,
+                       plateau_streak=plateau_streak, epsilon=round(ctrl.eps, 6),
+                       tokens_frac_Dstar=round(step * tok_per_step / d_star, 4),
                        tokens_per_sec=round(tok_int / el, 1),
                        peak_alloc_gib=round(torch.cuda.max_memory_allocated() / 2**30, 2),
                        device_used_gib=round((total - free) / 2**30, 2),
@@ -497,16 +521,19 @@ def main() -> int:
             t_int, tok_int = time.perf_counter(), 0
             print(f"[{args.experiment}] step {step}/{total_steps} L_tr={L_train:.4f} L_val={L_val:.4f} "
                   f"viol={row['violation_count']}/{n_ref} p={smlp.p} Δp+={ctrl.c['delta_p_plus']} "
-                  f"Δp-={ctrl.c['delta_p_minus']} rb={ctrl.c['rollback_count']} lam={ctrl.lam:.2e} "
+                  f"Δp-={ctrl.c['delta_p_minus']} rb={ctrl.c['rollback_count']} lam={ctrl.lam:.2e} eps={ctrl.eps:.4f} "
+                  f"plateau={plateau_streak} "
                   f"tok/s={row['tokens_per_sec']:.0f} mem={row['peak_alloc_gib']}GiB", flush=True)
 
+        if stop_reason and step not in dose_steps:
+            dose_steps[step] = round(step * tok_per_step / d_star, 4)       # early-stop checkpoint
         if step in dose_steps:
             f = dose_steps[step]
             torch.save({"mlp": {n: p.detach().cpu() for n, p in smlp.named_parameters()},
                         "step": step, "tokens_seen": step * tok_per_step, "dose": f,
                         "counters": dict(ctrl.c), "lam": ctrl.lam, "p": smlp.p,
                         "layer": tidx, "base": cfg["model"]["local_path"]},
-                       out / f"dose_{f:.2f}.pt")
+                       out / (f"dose_{f:.2f}.pt" if f in cfg["budget"]["dose_checkpoints"] else f"stop_{f:.4f}Dstar.pt"))
             row["dose_checkpoint"] = f
             print(f"[dose] {f:.2f} D* checkpoint saved", flush=True)
         log(row)
@@ -514,13 +541,13 @@ def main() -> int:
         if step % ctl["save_every"] == 0 or step == total_steps or stop_reason:
             tmp = out / "latest.pt.tmp"
             torch.save({"mlp": {n: p.detach() for n, p in smlp.named_parameters()},
-                        "opt": optimizer.state_dict(), "counters": ctrl.c, "lam": ctrl.lam,
+                        "opt": optimizer.state_dict(), "counters": ctrl.c, "lam": ctrl.lam, "eps": ctrl.eps,
                         "step": step, "prev_val": prev_val, "plateau_streak": plateau_streak,
-                        "best_ema": best_ema, "ema": ema, "rng": torch.get_rng_state(),
+                        "best_ema": best_ema, "ema": ema, "best_val": best_val, "rng": torch.get_rng_state(),
                         "wall": time.perf_counter() - wall_start}, tmp)
             os.replace(tmp, ck)
         if stop_reason:
-            print(f"[safety] stop: {stop_reason}", flush=True)
+            print(f"[stop] {stop_reason} at step {step} ({step * tok_per_step / d_star:.3f} D*)", flush=True)
             break
 
     log(dict(event="run_end", step=step, stop_reason=stop_reason, p=smlp.p, lam=ctrl.lam, **ctrl.c,
