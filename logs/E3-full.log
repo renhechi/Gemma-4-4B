@@ -11,3 +11,8 @@ Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/cs
 [E3-full] step 125/6000 L_tr=2.7869 L_val=2.8377 viol=62/64 p=10126 Δp+=14 Δp-=128 rb=18 lam=2.52e-07 eps=0.0142 plateau=0 tok/s=238 mem=34.19GiB
 [load] /home/renhe/gemma4_pretrain/models/gemma-4-E4B-it
 Loading weights:   0%|          | 0/2076 [00:00<?, ?it/s]Loading weights:  14%|█▍        | 288/2076 [00:00<00:00, 2764.38it/s]Loading weights:  27%|██▋       | 565/2076 [00:00<00:00, 2629.05it/s]Loading weights:  46%|████▌     | 946/2076 [00:00<00:00, 3145.41it/s]Loading weights:  64%|██████▍   | 1334/2076 [00:00<00:00, 3427.54it/s]Loading weights:  82%|████████▏ | 1699/2076 [00:00<00:00, 3486.58it/s]Loading weights:  99%|█████████▊| 2049/2076 [00:00<00:00, 2812.14it/s]Loading weights: 100%|██████████| 2076/2076 [00:00<00:00, 2994.89it/s]
+[resume] step=100 p=10124 lam=3.60e-07
+/home/renhe/gemma4_pretrain/scripts/train_lgdsrfpa.py:465: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  f"‖w‖²={float(smlp.sq_norm()):.1f}", flush=True)
+[run] E3-full mode=E3 steps=6000 tok/step=262,144 D*=1.573B unique_train=1.958B p=10124 ‖w‖²=36961.1
