@@ -23,6 +23,7 @@ Resumes automatically from runs/<experiment>/latest.pt.
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import math
 import os
@@ -143,8 +144,12 @@ class Controller:
         self.x_ref = x_ref                                               # list of (T,d) bf16 on GPU
         with torch.no_grad():
             self.xbar = torch.stack([x.float().mean(0) for x in x_ref])  # (N,d)
-            self.z_star = torch.stack([base_mlp(x).float().mean(0) for x in x_ref])
-        self.z_star_norm = self.z_star.norm(dim=1).clamp_min(1e-8)
+            self.z_base = torch.stack([base_mlp(x).float().mean(0) for x in x_ref])  # F_L(x; w_0)
+        self.z_base_norm = self.z_base.norm(dim=1).clamp_min(1e-8)
+        self.moving = cfg["learning_goal"]["reference"] == "moving"
+        self.base_mlp = base_mlp
+        self.ref_mlp = base_mlp                                          # module that produces z* for batch checks
+        self.z_star, self.z_star_norm = self.z_base, self.z_base_norm
         self.c = dict(structuring_trigger_count=0, delta_p_plus=0, delta_p_minus=0,
                       rollback_count=0, repair_attempts=0, repair_success=0,
                       isolate_fail=0, nt_rounds=0, nt_fail_total=0, struct_fail_streak=0)
@@ -160,9 +165,21 @@ class Controller:
         return (self.z_ref() - self.z_star).norm(dim=1) / self.z_star_norm
 
     @torch.no_grad()
-    def batch_deviation(self, x: torch.Tensor, base_mlp) -> torch.Tensor:
+    def dev_base(self) -> torch.Tensor:
+        """Cumulative drift from the original model (reported only, not a control signal)."""
+        return (self.z_ref() - self.z_base).norm(dim=1) / self.z_base_norm
+
+    @torch.no_grad()
+    def refresh_reference(self) -> None:
+        """Algo 7 Step 4 (Feedback): the network after this round becomes the reference z*."""
+        self.z_star = self.z_ref()
+        self.z_star_norm = self.z_star.norm(dim=1).clamp_min(1e-8)
+        self.ref_mlp = copy.deepcopy(self.smlp).requires_grad_(False)
+
+    @torch.no_grad()
+    def batch_deviation(self, x: torch.Tensor) -> torch.Tensor:
         z = self.smlp(x).float().mean(1)
-        zs = base_mlp(x).float().mean(1)
+        zs = self.ref_mlp(x).float().mean(1)
         return (z - zs).norm(dim=1) / zs.norm(dim=1).clamp_min(1e-8)
 
     # Algo 1: Selecting — κ = argmin_c (δ[c]² > ε²)
@@ -286,7 +303,7 @@ class Controller:
         out = dict(ref_violations=v, dev_mean=float(dev.mean()), dev_max=float(dev.max()), epsilon=self.eps)
         # adaptive ε (same rule as 12B E1-full): tighten ×η when clean, hold once any violation
         if v == 0:
-            self.eps = max(self.eps_min, self.eps * self.eta_eps_down)
+            self.eps = max(min(self.eps_min, self.eps), self.eps * self.eta_eps_down)  # never raise ε
         if v > 0:
             self.c["structuring_trigger_count"] += 1
             if self.mode in ("E2", "E3"):
@@ -303,6 +320,12 @@ class Controller:
                     self.lam = min(self.lam_max, self.eta * self.lam)
                 out.update(self.network_tuning(optimizer))
         out["p"] = self.smlp.p
+        dev_end = self.deviations()
+        out["v_final"] = int((dev_end > self.eps).sum())                 # after module dispatch, before feedback
+        out["dev_final_mean"] = float(dev_end.mean())
+        out["dev_base_mean"] = float(self.dev_base().mean())
+        if self.moving:
+            self.refresh_reference()
         self.last_round = out
         return out
 
@@ -424,10 +447,12 @@ def main() -> int:
         optimizer.load_state_dict(s["opt"])
         ctrl.c, ctrl.lam = s["counters"], s["lam"]
         ctrl.eps = s.get("eps", ctrl.eps)
+        if ctrl.moving:
+            ctrl.refresh_reference()
         step, prev_val, plateau_streak, best_ema, ema = s["step"], s["prev_val"], s["plateau_streak"], s["best_ema"], s["ema"]
         wall0 = s["wall"]
         best_val = s.get("best_val", math.inf)
-        torch.set_rng_state(s["rng"])
+        torch.set_rng_state(s["rng"].cpu())
         print(f"[resume] step={step} p={smlp.p} lam={ctrl.lam:.2e}", flush=True)
     else:
         log(dict(event="run_start", config=cfg, total_steps=total_steps, tok_per_step=tok_per_step,
@@ -469,7 +494,7 @@ def main() -> int:
         step += 1
         tok_int += tok_per_step
         L_train = l_sum / accum
-        bdev = ctrl.batch_deviation(cap.x, base_mlp)
+        bdev = ctrl.batch_deviation(cap.x)
         cap.x = None
 
         # safety (ED §4.7)
@@ -503,13 +528,17 @@ def main() -> int:
                 stop_reason = "early_stop_plateau"
             if step > es["min_steps"] and L_val > cfg["safety"]["divergence_factor"] * best_val:
                 stop_reason = "divergence_val"
+            lr_ = ctrl.last_round if "ctrl" in row else {}
             dev = ctrl.deviations()
+            v_eval = lr_.get("v_final", int((dev > ctrl.eps).sum()))
             el = time.perf_counter() - t_int
             free, total = torch.cuda.mem_get_info()
             row.update(event="eval", L_val=round(L_val, 5), delta_L_t=dL,
                        generalization_gap=round(L_val - L_train, 5),
-                       acceptability_rate=round(1 - float((dev > ctrl.eps).float().mean()), 4),
-                       violation_count=int((dev > ctrl.eps).sum()), dev_mean=round(float(dev.mean()), 5),
+                       acceptability_rate=round(1 - v_eval / len(ctrl.x_ref), 4),
+                       violation_count=v_eval, violations_before_modules=lr_.get("ref_violations"),
+                       dev_mean=round(lr_.get("dev_mean", float(dev.mean())), 5),
+                       dev_base_mean=round(float(ctrl.dev_base().mean()), 5),
                        plateau=plateau_streak >= cfg["plateau"]["consecutive_evals"],
                        plateau_streak=plateau_streak, epsilon=round(ctrl.eps, 6),
                        tokens_frac_Dstar=round(step * tok_per_step / d_star, 4),

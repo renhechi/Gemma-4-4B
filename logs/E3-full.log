@@ -9,3 +9,5 @@ Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/cs
 [E3-full] step 75/6000 L_tr=3.3220 L_val=3.4972 viol=60/64 p=10122 Δp+=10 Δp-=128 rb=6 lam=5.14e-07 eps=0.0142 plateau=0 tok/s=238 mem=34.19GiB
 [E3-full] step 100/6000 L_tr=2.8973 L_val=3.0185 viol=62/64 p=10124 Δp+=12 Δp-=128 rb=12 lam=3.60e-07 eps=0.0142 plateau=0 tok/s=239 mem=34.19GiB
 [E3-full] step 125/6000 L_tr=2.7869 L_val=2.8377 viol=62/64 p=10126 Δp+=14 Δp-=128 rb=18 lam=2.52e-07 eps=0.0142 plateau=0 tok/s=238 mem=34.19GiB
+[load] /home/renhe/gemma4_pretrain/models/gemma-4-E4B-it
+Loading weights:   0%|          | 0/2076 [00:00<?, ?it/s]Loading weights:  14%|█▍        | 288/2076 [00:00<00:00, 2764.38it/s]Loading weights:  27%|██▋       | 565/2076 [00:00<00:00, 2629.05it/s]Loading weights:  46%|████▌     | 946/2076 [00:00<00:00, 3145.41it/s]Loading weights:  64%|██████▍   | 1334/2076 [00:00<00:00, 3427.54it/s]Loading weights:  82%|████████▏ | 1699/2076 [00:00<00:00, 3486.58it/s]Loading weights:  99%|█████████▊| 2049/2076 [00:00<00:00, 2812.14it/s]Loading weights: 100%|██████████| 2076/2076 [00:00<00:00, 2994.89it/s]

@@ -39,8 +39,12 @@
 
 ## 4. 演算法實作對應
 
-- **Learning goal(式 10)**:z_c = 最後層 Gated FFN 輸出(序列 token 平均),z*_c = 同一輸入經**凍結之原始 MLP** 的輸出;判定 ‖z_c − z*_c‖/‖z*_c‖ ≤ ε。
-  因前 41 層凍結,x_c 永不改變 ⇒ z*_c 為精確值,且檢核只需 MLP 前向(參考集 R = 64 條固定 val 序列,與 L_val 集不重疊)。
+- **Learning goal(式 10)**:z_c = 最後層 Gated FFN 輸出(序列 token 平均);判定 ‖z_c − z*_c‖/‖z*_c‖ ≤ ε(參考集 R = 64 條固定 val 序列,與 L_val 集不重疊)。
+  因前 41 層凍結,x_c 永不改變 ⇒ 檢核只需 MLP 前向。
+  - **z* 採移動參考(2026-09-29 使用者選 A)**:每次 control 回合結束後,以該回合模組作用後之網路輸出作為新的 z*(Algo 7 Step 4 Feedback)。
+    learning goal 因而約束「每 25 步區間內的表示變化量」。原固定 z* = F_L(x; w_0)(v2)在 step 50–125 違反數卡在 62/64、NT 從未啟動、λ 持續衰減,
+    即 CPT 下 loss 大幅下降(4.5→2.8)必然使最後層偏離原始表示,固定參考無法作為可接受性準則。
+  - 累積偏離原始模型之量仍記錄為 `dev_base_mean`(不作控制訊號),供論文報告。
 - **Weight-Tuning(式 11–12,ED §4.2)**:最佳化目標為 L_CLM;AdamW lr 2e-5 cosine(warmup 100)、batch 64×4096 = 262k tok/step、共 6,001 步。
 - **調度(Algo 7)**:每 25 步檢核一次 learning goal:有違反 → Structuring;全滿足 → Network-Tuning(E3)。
 - **Selecting(式 13–15)**:κ = 違反樣本中 δ 最小者。
@@ -101,5 +105,6 @@ conda run -n gemma3_env python3 scripts/eval_final.py --ckpt runs/E1-full/dose_1
 1. **GX10 GPU 時脈卡在 ~650 MHz(最高 3003)**:bf16 matmul 僅 3.7 TFLOPs,訓練 ~250 tok/s ⇒ 1.573B 需 ~70 天。
    溫度正常、無 lock,SW Power Capping 計數持續累加、開機已 27 天。需 sudo:`sudo nvidia-smi -rgc` 或重開機後重測
    (`scripts/profile_speed.py`)。正常時脈預期提升 10× 以上。12B 軌道的 105 tok/s 很可能也受此影響。
-2. ε 改為自動下降(0.015 → 下限 0.005),見 §4。v0(固定 ε=0.02)於 step 25 停止並封存為 `runs/E3-full_v0_eps0.02/`。
+2. z* 由固定改為移動參考(見 §4);v2(固定 z*)step 101–128 紀錄存於 `runs/E3-full/metrics_discarded_steps101-128_fixedref.jsonl`,自 step-100 checkpoint 續跑。
+3. ε 改為自動下降(0.015 → 下限 0.005),見 §4。v0(固定 ε=0.02)於 step 25 停止並封存為 `runs/E3-full_v0_eps0.02/`。
 3. 年報占 D_fin 77.6%,是否設上限重建,屬研究設計決定。

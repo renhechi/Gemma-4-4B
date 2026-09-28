@@ -40,7 +40,8 @@ learning_goal:                                         # Eq. 10: ‖z_c − z*_c
   epsilon: 0.015                                       # start value (same as 12B E1-full)
   epsilon_min: 0.005                                   # floor — never tighten below this
   eta_eps_down: 0.95                                   # ε ← max(ε_min, 0.95ε) at each clean control check; hold on violation
-  reference: base-mlp                                  # z*_c = F_L(x_c; w_0): exact, prefix frozen
+  reference: moving                                    # 2026-09-29 user choice A: z* ← network after each control round
+                                                       # (Algo 7 Step 4 Feedback); 'base' = fixed F_L(x; w_0) (v2, archived)
 
 control:
   control_interval: 25                                 # opt-steps between learning-goal checks / module dispatch

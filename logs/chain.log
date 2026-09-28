@@ -4,3 +4,6 @@
 [chain] 2026-09-27 08:36:09 stopped E3-full v1 (seq 4096) → switch to seq_len 1024 (user: combine GPU fix + shorter seq)
 [chain] 2026-09-27 08:45:04 seq 1024 bench: 272 vs 255 tok/s (+7%) → keep 4096
 [chain] 2026-09-27 08:45:04 start E3-full (try 1)
+[chain] 2026-09-29 01:40:14 stopped E3-full at step ~128 → option A (moving reference z*, Algo 7 Step 4 Feedback); resume from step-100 ckpt
+[chain] 2026-09-29 02:03:30 resume E3-full from step 100 with moving reference (rows 101–128 → metrics_discarded_*.jsonl)
+[chain] 2026-09-29 02:03:30 start E3-full (try 1)
