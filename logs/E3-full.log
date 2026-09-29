@@ -17,3 +17,4 @@ Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/cs
   f"‖w‖²={float(smlp.sq_norm()):.1f}", flush=True)
 [run] E3-full mode=E3 steps=6000 tok/step=262,144 D*=1.573B unique_train=1.958B p=10124 ‖w‖²=36961.1
 [E3-full] step 125/6000 L_tr=2.7869 L_val=2.7828 viol=61/64 p=10127 Δp+=15 Δp-=128 rb=17 lam=2.52e-07 eps=0.0142 plateau=0 tok/s=238 mem=34.35GiB
+[E3-full] step 150/6000 L_tr=2.6416 L_val=2.6717 viol=62/64 p=10129 Δp+=17 Δp-=128 rb=23 lam=1.76e-07 eps=0.0142 plateau=0 tok/s=238 mem=34.75GiB
