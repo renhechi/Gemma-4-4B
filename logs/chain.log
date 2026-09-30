@@ -8,3 +8,4 @@
 [chain] 2026-09-29 02:03:30 resume E3-full from step 100 with moving reference (rows 101–128 → metrics_discarded_*.jsonl)
 [chain] 2026-09-29 02:03:30 start E3-full (try 1)
 [chain] 2026-10-01 01:24:25 relaunch: control_interval 1 + nt_interval 25 (tested E3-ctl1test)
+[chain] 2026-10-01 01:24:25 start E3-full (try 1)

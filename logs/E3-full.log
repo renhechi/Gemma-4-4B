@@ -22,3 +22,5 @@ Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/cs
 [E3-full] step 200/6000 L_tr=2.6213 L_val=2.5589 viol=62/64 p=10133 Δp+=21 Δp-=128 rb=35 lam=8.65e-08 eps=0.0142 plateau=0 tok/s=237 mem=34.75GiB
 [E3-full] step 225/6000 L_tr=2.5654 L_val=2.5193 viol=62/64 p=10135 Δp+=23 Δp-=128 rb=41 lam=6.05e-08 eps=0.0142 plateau=0 tok/s=235 mem=34.75GiB
 [E3-full] step 250/6000 L_tr=2.6296 L_val=2.4835 viol=62/64 p=10137 Δp+=25 Δp-=128 rb=47 lam=4.24e-08 eps=0.0142 plateau=0 tok/s=236 mem=34.75GiB
+[load] /home/renhe/gemma4_pretrain/models/gemma-4-E4B-it
+Loading weights:   0%|          | 0/2076 [00:00<?, ?it/s]Loading weights:  18%|█▊        | 368/2076 [00:00<00:00, 3678.51it/s]Loading weights:  35%|███▌      | 736/2076 [00:00<00:00, 3552.33it/s]Loading weights:  53%|█████▎    | 1092/2076 [00:00<00:00, 3272.97it/s]Loading weights:  68%|██████▊   | 1422/2076 [00:00<00:00, 3068.29it/s]Loading weights:  84%|████████▍ | 1746/2076 [00:00<00:00, 3116.72it/s]Loading weights: 100%|██████████| 2076/2076 [00:00<00:00, 3222.80it/s]
