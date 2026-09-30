@@ -46,7 +46,9 @@
     即 CPT 下 loss 大幅下降(4.5→2.8)必然使最後層偏離原始表示,固定參考無法作為可接受性準則。
   - 累積偏離原始模型之量仍記錄為 `dev_base_mean`(不作控制訊號),供論文報告。
 - **Weight-Tuning(式 11–12,ED §4.2)**:最佳化目標為 L_CLM;AdamW lr 2e-5 cosine(warmup 100)、batch 64×4096 = 262k tok/step、共 6,001 步。
-- **調度(Algo 7)**:每 25 步檢核一次 learning goal:有違反 → Structuring;全滿足 → Network-Tuning(E3)。
+- **調度(Algo 7)**:**每一次 Weight-Tuning 更新後**檢核 learning goal(2026-10-01 起;第三章「每一輪更新後,系統先檢核 learning goal」):
+  有違反 → Structuring;ε 自動調整;參考 z* 更新。Network-Tuning(剪枝)與 λ(§4.8,以 25 步窗口內是否違反/是否修復判定)每 25 步一次。
+  原每 25 步檢核一次時,區間內漂移 ≈ 0.005/步 × 25 ≈ 0.12–0.14 ≫ ε(0.014),64/64 違反、每輪只修 2 個、NT 從未執行 → 改為逐步檢核。
 - **Selecting(式 13–15)**:κ = 違反樣本中 δ 最小者。
 - **Isolating(式 16)**:在 R 的池化輸入 x̄ 空間中搜尋 γ(T=32 次),使 γᵀ(x̄_c − x̄_κ) < −ζ ∀c≠κ。
   *調整:採單側隔離* — 單一 gated channel 沿 γ 為單調,無法實作式 16 的雙側夾擠;單側條件仍保證新 channel 對 κ 以外樣本近乎不激活。

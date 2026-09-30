@@ -154,6 +154,7 @@ class Controller:
                       rollback_count=0, repair_attempts=0, repair_success=0,
                       isolate_fail=0, nt_rounds=0, nt_fail_total=0, struct_fail_streak=0)
         self.last_round = {}
+        self.win_viol_rounds = self.win_unrepaired = 0                   # λ window (since last nt_round)
 
     # learning goal (Eq. 10, 13)
     @torch.no_grad()
@@ -297,27 +298,34 @@ class Controller:
         return dict(prune_accepts=acc, prune_fails=fails)
 
     # main dispatch after Weight-Tuning (Algo 7 / ED §4.10)
-    def control(self, optimizer, val_delta: float | None) -> dict:
+    def control(self, optimizer, val_delta: float | None, nt_round: bool = True) -> dict:
+        """Called after every Weight-Tuning update (proposal ch.3: 每一輪更新後先檢核 learning goal).
+        Structuring runs whenever violated; λ (§4.8) and Network-Tuning run on nt_round only,
+        with λ judged over the whole window since the previous nt_round."""
         dev = self.deviations()
         v = int((dev > self.eps).sum())
         out = dict(ref_violations=v, dev_mean=float(dev.mean()), dev_max=float(dev.max()), epsilon=self.eps)
         # adaptive ε (same rule as 12B E1-full): tighten ×η when clean, hold once any violation
         if v == 0:
             self.eps = max(min(self.eps_min, self.eps), self.eps * self.eta_eps_down)  # never raise ε
+        v_now = v
         if v > 0:
             self.c["structuring_trigger_count"] += 1
+            self.win_viol_rounds += 1
             if self.mode in ("E2", "E3"):
                 r = self.structuring(optimizer)
                 out.update(r)
-                if self.mode == "E3":                                    # §4.8 λ rules
-                    if r["v_after"] == 0:
-                        pass                                             # repaired → hold
-                    else:
-                        self.lam = max(self.lam_min, self.gam * self.lam)
-        else:
-            if self.mode == "E3":
-                if val_delta is None or val_delta <= self.val_tol:
-                    self.lam = min(self.lam_max, self.eta * self.lam)
+                v_now = r["v_after"]
+            self.win_unrepaired += int(v_now > 0)
+        if nt_round and self.mode == "E3":
+            # §4.8 over the window: clean & L_val ok → ×η; violations all repaired → hold; persistent → ×γ
+            if self.win_viol_rounds == 0 and (val_delta is None or val_delta <= self.val_tol):
+                self.lam = min(self.lam_max, self.eta * self.lam)
+            elif self.win_unrepaired > 0:
+                self.lam = max(self.lam_min, self.gam * self.lam)
+            out.update(win_viol_rounds=self.win_viol_rounds, win_unrepaired=self.win_unrepaired)
+            self.win_viol_rounds = self.win_unrepaired = 0
+            if v_now == 0:                                               # NT only on an acceptable network
                 out.update(self.network_tuning(optimizer))
         out["p"] = self.smlp.p
         dev_end = self.deviations()
@@ -453,7 +461,16 @@ def main() -> int:
         wall0 = s["wall"]
         best_val = s.get("best_val", math.inf)
         torch.set_rng_state(s["rng"].cpu())
-        print(f"[resume] step={step} p={smlp.p} lam={ctrl.lam:.2e}", flush=True)
+        # rows logged after this checkpoint belong to the interrupted attempt → keep them, but out of metrics.jsonl
+        rows = open(mpath).readlines()
+        stale = [l for l in rows if json.loads(l).get("event") in ("step", "eval") and json.loads(l).get("step", 0) > step]
+        if stale:
+            with open(out / f"metrics_discarded_after_step{step}_{int(time.time())}.jsonl", "w") as fh:
+                fh.writelines(stale)
+            with open(mpath, "w") as fh:
+                fh.writelines(l for l in rows if l not in stale)
+        log(dict(event="resume", from_step=step, discarded_rows=len(stale)))
+        print(f"[resume] step={step} p={smlp.p} lam={ctrl.lam:.2e} discarded_rows={len(stale)}", flush=True)
     else:
         log(dict(event="run_start", config=cfg, total_steps=total_steps, tok_per_step=tok_per_step,
                  d_star=d_star, n_ffn=n_ffn, d_star_rule="chinchilla_ratio × N_FFN", unique_train_tokens=int(uniq_train), dfin_meta=data.meta,
@@ -510,7 +527,7 @@ def main() -> int:
                    batch_violations=int((bdev > ctrl.eps).sum()), batch_dev_max=round(float(bdev.max()), 5))
 
         if step % ctl["control_interval"] == 0 or step in dose_steps:
-            r = ctrl.control(optimizer, val_change)
+            r = ctrl.control(optimizer, val_change, nt_round=(step % ctl["nt_interval"] == 0 or step in dose_steps))
             row.update(ctrl=r, p=smlp.p, lam=ctrl.lam)
             if ctrl.c["struct_fail_streak"] >= cfg["safety"]["struct_fail_streak"]:
                 print(f"[warn] {ctrl.c['struct_fail_streak']} consecutive failed structuring rounds", flush=True)

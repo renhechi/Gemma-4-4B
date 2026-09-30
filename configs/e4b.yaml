@@ -44,7 +44,8 @@ learning_goal:                                         # Eq. 10: ‖z_c − z*_c
                                                        # (Algo 7 Step 4 Feedback); 'base' = fixed F_L(x; w_0) (v2, archived)
 
 control:
-  control_interval: 25                                 # opt-steps between learning-goal checks / module dispatch
+  control_interval: 1                                  # 2026-10-01: check after EVERY update (proposal ch.3); drift ≈0.005/step vs ε 0.014
+  nt_interval: 25                                      # λ window (§4.8) + Network-Tuning pruning every 25 steps
   eval_interval: 25                                    # opt-steps between L_val evals (12B E1-full: 20)
   save_every: 100
 
