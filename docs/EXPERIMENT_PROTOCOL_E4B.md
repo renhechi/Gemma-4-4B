@@ -97,6 +97,20 @@ conda run -n gemma3_env python3 scripts/eval_final.py --ckpt runs/E1-full/dose_1
 - 專業人士:**只一次**,base vs E3 最終模型,30 題(eval/expert_questions.jsonl,6 類,請審閱修改),A/B 隨機匿名 + 5 構面 rubric。
 - AI 輔助 rubric 評分:可選,限中間 checkpoint,論文中表述為「AI 輔助判讀」。
 
+## 6b. Structuring 實作與第三章公式之差異(2026-10-01 記錄,使用者決定維持現狀續跑)
+
+| 項目 | 計畫書 p.30(式 16–19、圖 3-1) | 本實作 |
+|---|---|---|
+| 式 17 gate 權重 | w_p^H = γ | β·γ,β = 4/ζ(為使單一 channel 一次精確修復 κ) |
+| 式 17 up projection | gate 與 up 皆為 γ | up 權重 0、bias 1(常數) |
+| 式 18 bias | −ζ − γᵀx^κ | β(ζ − γᵀx̄^κ)(單側形式) |
+| 式 16 隔離條件 | 雙側 \|γᵀ(x^c − x^κ)\| > ζ | 單側(κ 位於投影極端) |
+| 式 19 down 權重 | 殘差 / ζ | 殘差 / 實際 activation ā_κ |
+| 圖 3-1 Structuring | Node-Adding 後執行 Weight-Tuning(finite repair)再判定接受 | 加入後立即判定;finite repair 由後續一般 Weight-Tuning 承擔 |
+
+**觀察到的現象(E3-full step 220–274)**:逐步檢核啟動後,新增 channel 因 β 放大而具高增益 → grad_norm 由 0.25 升至約 2(同資料、同 lr、少量新增之對照版本維持 0.25–0.35)→ 每步漂移上升 → 違反增加 → 每步新增達上限 8 個、出現未修復違反(自我強化迴圈)。
+使用者決定:**不修改,維持現狀跑至 early stop**,此迴圈作為實驗觀察紀錄;論文需註明上表差異。
+
 ## 7. 已知問題 / 待決
 
 **執行時間分析(2026-09-27)**:與 student-4B direct-CPT(246M tok / 5.3 天 / ~539 tok/s)相比,本實驗 token 量 6.4×(20× 以 78.6M FFN 參數計,而非 14M LoRA 參數),
