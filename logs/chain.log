@@ -10,3 +10,5 @@
 [chain] 2026-10-01 01:24:25 relaunch: control_interval 1 + nt_interval 25 (tested E3-ctl1test)
 [chain] 2026-10-01 01:24:25 start E3-full (try 1)
 [chain] 2026-10-01 10:05:40 stopped manually for GPU cold drain (user request); will resume from step-200 ckpt at boot
+[boot] 2026-10-01 10:32:33 clocks: 208 MHz, 3003 MHz
+[chain] 2026-10-01 10:32:33 start E3-full (try 1)
