@@ -1,0 +1,3 @@
+# disabled 2026-09-27 (GPU given to gemma4 chain): @reboot /home/renhe/gemma3_pretrain/scripts/boot_resume_e1.sh
+@reboot /home/renhe/gemma3_pretrain/scripts/boot_resume_teacherv3.sh
+@reboot /home/renhe/gemma4_pretrain/scripts/boot_resume_g4.sh
