@@ -1,0 +1,69 @@
+[collect]
+  news      +160,581  (dropped incomplete 2,506)
+  esg       +28,773  (dropped incomplete 132)
+  esg_ocr   +1,158  (dropped incomplete 26)
+  esg_ocr   +32,521  (dropped incomplete 270)
+  annual    +148,611  (dropped incomplete 485,576)
+  annual_tbl +10,919  (dropped incomplete 725)
+  (annual: 559 reports replaced by table-preserving relayout)
+  acad      +4,572  (dropped incomplete 562)
+  fin_news  +330  (dropped incomplete 0)
+  penalty   +505  (dropped incomplete 0)
+  law       (articles, no chunking)
+  ins_law   (articles, no chunking)
+  edgar     +53,180 (of 297,154 available)
+[dedup] kept 385,899 docs (heldout-excluded 58)
+[tok] encoding with 16 workers …
+  256/385,899 docs  0.5M tok
+  51,456/385,899 docs  96.3M tok
+  102,656/385,899 docs  192.1M tok
+  153,856/385,899 docs  287.9M tok
+  205,056/385,899 docs  383.6M tok
+  256,256/385,899 docs  479.4M tok
+  307,456/385,899 docs  575.0M tok
+  358,656/385,899 docs  670.8M tok
+{
+  "tokenizer": "/home/renhe/gemma4_pretrain/models/gemma-4-E4B-it",
+  "n_docs": 385899,
+  "n_val_docs": 1929,
+  "total_tokens": 721588788,
+  "val_tokens": 3705427,
+  "train_tokens": 717883361,
+  "tokens_by_cat": {
+    "annual": 337621241,
+    "esg_ocr": 69415271,
+    "edgar": 57354351,
+    "news": 156662029,
+    "esg": 62410520,
+    "annual_tbl": 25785235,
+    "acad": 8861468,
+    "fin_news": 559023,
+    "ins_law": 780952,
+    "law": 558108,
+    "penalty": 1580590
+  },
+  "cats": [
+    "acad",
+    "annual",
+    "annual_tbl",
+    "edgar",
+    "esg",
+    "esg_ocr",
+    "fin_news",
+    "ins_law",
+    "law",
+    "news",
+    "penalty"
+  ],
+  "chunk_chars": 3000,
+  "upsample": {
+    "law": 4,
+    "ins_law": 4,
+    "penalty": 2
+  },
+  "heldout_excluded": 58,
+  "seed": 42,
+  "version": "v2-complete-norm",
+  "normalization": "NFC + fullwidth alnum→halfwidth + special spaces→space + zero-width removed + fullwidth digit separators in numbers→ASCII (no NFKC: keeps CJK punctuation)",
+  "filter": "drop chunk if >30% non-table lines are bare numbers or mean line len < 8; relayout tables replace text-layer annual"
+}

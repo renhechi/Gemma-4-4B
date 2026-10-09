@@ -13,3 +13,5 @@
 [boot] 2026-10-01 10:32:33 clocks: 208 MHz, 3003 MHz
 [chain] 2026-10-01 10:32:33 start E3-full (try 1)
 [chain] 2026-10-09 17:37:42 PAUSED by user (away >1 month, machine powered off). Resume from latest.pt = step 1200 (copy: ckpt_step1200_pre_instability.pt). Pending decision A/B/C (see docs/RESUME_NOTE.md)
+[chain] 2026-10-10 05:46:57 start E3-full on dfin_v2 (complete-information + normalized); old run archived as E3-full_dfin_v1
+[chain] 2026-10-10 05:46:57 start E3-full (try 1)

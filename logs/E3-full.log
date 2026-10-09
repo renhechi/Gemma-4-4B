@@ -1,81 +1,0 @@
-[load] /home/renhe/gemma4_pretrain/models/gemma-4-E4B-it
-Loading weights:   0%|          | 0/2076 [00:00<?, ?it/s]Loading weights:   8%|▊         | 160/2076 [00:00<00:01, 1572.25it/s]Loading weights:  15%|█▌        | 318/2076 [00:00<00:02, 669.72it/s] Loading weights:  24%|██▎       | 490/2076 [00:00<00:01, 944.37it/s]Loading weights:  31%|███       | 641/2076 [00:00<00:01, 1088.64it/s]Loading weights:  38%|███▊      | 797/2076 [00:00<00:01, 1218.89it/s]Loading weights:  45%|████▌     | 940/2076 [00:00<00:01, 1015.36it/s]Loading weights:  51%|█████     | 1060/2076 [00:01<00:01, 957.45it/s]Loading weights:  57%|█████▋    | 1193/2076 [00:01<00:00, 1043.25it/s]Loading weights:  63%|██████▎   | 1309/2076 [00:01<00:00, 977.84it/s] Loading weights:  68%|██████▊   | 1415/2076 [00:01<00:00, 849.13it/s]Loading weights:  74%|███████▍  | 1545/2076 [00:01<00:00, 951.25it/s]Loading weights:  80%|███████▉  | 1654/2076 [00:01<00:00, 956.55it/s]Loading weights:  86%|████████▌ | 1775/2076 [00:01<00:00, 1018.55it/s]Loading weights:  92%|█████████▏| 1900/2076 [00:01<00:00, 1064.06it/s]Loading weights: 100%|██████████| 2076/2076 [00:01<00:00, 1046.64it/s]
-/home/renhe/gemma4_pretrain/scripts/train_lgdsrfpa.py:440: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
-Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
-  f"‖w‖²={float(smlp.sq_norm()):.1f}", flush=True)
-[run] E3-full mode=E3 steps=6000 tok/step=262,144 D*=1.573B unique_train=1.958B p=10240 ‖w‖²=35296.1
-[E3-full] step 25/6000 L_tr=4.4722 L_val=4.5041 viol=0/64 p=10112 Δp+=0 Δp-=128 rb=0 lam=1.05e-06 eps=0.0142 plateau=0 tok/s=238 mem=34.19GiB
-[E3-full] step 50/6000 L_tr=3.9362 L_val=4.0978 viol=56/64 p=10118 Δp+=6 Δp-=128 rb=2 lam=7.35e-07 eps=0.0142 plateau=0 tok/s=236 mem=34.19GiB
-[E3-full] step 75/6000 L_tr=3.3220 L_val=3.4972 viol=60/64 p=10122 Δp+=10 Δp-=128 rb=6 lam=5.14e-07 eps=0.0142 plateau=0 tok/s=238 mem=34.19GiB
-[E3-full] step 100/6000 L_tr=2.8973 L_val=3.0185 viol=62/64 p=10124 Δp+=12 Δp-=128 rb=12 lam=3.60e-07 eps=0.0142 plateau=0 tok/s=239 mem=34.19GiB
-[E3-full] step 125/6000 L_tr=2.7869 L_val=2.8377 viol=62/64 p=10126 Δp+=14 Δp-=128 rb=18 lam=2.52e-07 eps=0.0142 plateau=0 tok/s=238 mem=34.19GiB
-[load] /home/renhe/gemma4_pretrain/models/gemma-4-E4B-it
-Loading weights:   0%|          | 0/2076 [00:00<?, ?it/s]Loading weights:  14%|█▍        | 288/2076 [00:00<00:00, 2764.38it/s]Loading weights:  27%|██▋       | 565/2076 [00:00<00:00, 2629.05it/s]Loading weights:  46%|████▌     | 946/2076 [00:00<00:00, 3145.41it/s]Loading weights:  64%|██████▍   | 1334/2076 [00:00<00:00, 3427.54it/s]Loading weights:  82%|████████▏ | 1699/2076 [00:00<00:00, 3486.58it/s]Loading weights:  99%|█████████▊| 2049/2076 [00:00<00:00, 2812.14it/s]Loading weights: 100%|██████████| 2076/2076 [00:00<00:00, 2994.89it/s]
-[resume] step=100 p=10124 lam=3.60e-07
-/home/renhe/gemma4_pretrain/scripts/train_lgdsrfpa.py:465: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
-Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
-  f"‖w‖²={float(smlp.sq_norm()):.1f}", flush=True)
-[run] E3-full mode=E3 steps=6000 tok/step=262,144 D*=1.573B unique_train=1.958B p=10124 ‖w‖²=36961.1
-[E3-full] step 125/6000 L_tr=2.7869 L_val=2.7828 viol=61/64 p=10127 Δp+=15 Δp-=128 rb=17 lam=2.52e-07 eps=0.0142 plateau=0 tok/s=238 mem=34.35GiB
-[E3-full] step 150/6000 L_tr=2.6416 L_val=2.6717 viol=62/64 p=10129 Δp+=17 Δp-=128 rb=23 lam=1.76e-07 eps=0.0142 plateau=0 tok/s=238 mem=34.75GiB
-[E3-full] step 175/6000 L_tr=2.5845 L_val=2.6074 viol=62/64 p=10131 Δp+=19 Δp-=128 rb=29 lam=1.24e-07 eps=0.0142 plateau=0 tok/s=237 mem=34.75GiB
-[E3-full] step 200/6000 L_tr=2.6213 L_val=2.5589 viol=62/64 p=10133 Δp+=21 Δp-=128 rb=35 lam=8.65e-08 eps=0.0142 plateau=0 tok/s=237 mem=34.75GiB
-[E3-full] step 225/6000 L_tr=2.5654 L_val=2.5193 viol=62/64 p=10135 Δp+=23 Δp-=128 rb=41 lam=6.05e-08 eps=0.0142 plateau=0 tok/s=235 mem=34.75GiB
-[E3-full] step 250/6000 L_tr=2.6296 L_val=2.4835 viol=62/64 p=10137 Δp+=25 Δp-=128 rb=47 lam=4.24e-08 eps=0.0142 plateau=0 tok/s=236 mem=34.75GiB
-[load] /home/renhe/gemma4_pretrain/models/gemma-4-E4B-it
-Loading weights:   0%|          | 0/2076 [00:00<?, ?it/s]Loading weights:  18%|█▊        | 368/2076 [00:00<00:00, 3678.51it/s]Loading weights:  35%|███▌      | 736/2076 [00:00<00:00, 3552.33it/s]Loading weights:  53%|█████▎    | 1092/2076 [00:00<00:00, 3272.97it/s]Loading weights:  68%|██████▊   | 1422/2076 [00:00<00:00, 3068.29it/s]Loading weights:  84%|████████▍ | 1746/2076 [00:00<00:00, 3116.72it/s]Loading weights: 100%|██████████| 2076/2076 [00:00<00:00, 3222.80it/s]
-[resume] step=200 p=10133 lam=8.65e-08 discarded_rows=52
-/home/renhe/gemma4_pretrain/scripts/train_lgdsrfpa.py:482: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
-Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
-  f"‖w‖²={float(smlp.sq_norm()):.1f}", flush=True)
-[run] E3-full mode=E3 steps=6000 tok/step=262,144 D*=1.573B unique_train=1.958B p=10133 ‖w‖²=47285.4
-[E3-full] step 225/6000 L_tr=2.5655 L_val=2.5176 viol=0/64 p=10113 Δp+=33 Δp-=160 rb=42 lam=8.65e-08 eps=0.0054 plateau=0 tok/s=228 mem=34.75GiB
-[load] /home/renhe/gemma4_pretrain/models/gemma-4-E4B-it
-Loading weights:   0%|          | 0/2076 [00:00<?, ?it/s]Loading weights:  36%|███▌      | 750/2076 [00:00<00:00, 7387.23it/s]Loading weights:  72%|███████▏  | 1489/2076 [00:00<00:00, 5088.56it/s]Loading weights: 100%|██████████| 2076/2076 [00:00<00:00, 5907.51it/s]
-[resume] step=200 p=10133 lam=8.65e-08 discarded_rows=26
-/home/renhe/gemma4_pretrain/scripts/train_lgdsrfpa.py:482: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
-Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
-  f"‖w‖²={float(smlp.sq_norm()):.1f}", flush=True)
-[run] E3-full mode=E3 steps=6000 tok/step=262,144 D*=1.573B unique_train=1.958B p=10133 ‖w‖²=47285.4
-[E3-full] step 225/6000 L_tr=2.5655 L_val=2.5176 viol=0/64 p=10113 Δp+=33 Δp-=160 rb=42 lam=8.65e-08 eps=0.0054 plateau=0 tok/s=467 mem=34.75GiB
-[E3-full] step 250/6000 L_tr=2.6261 L_val=2.4798 viol=0/64 p=10218 Δp+=138 Δp-=160 rb=47 lam=6.05e-08 eps=0.0051 plateau=0 tok/s=437 mem=34.77GiB
-[E3-full] step 275/6000 L_tr=2.5358 L_val=2.4510 viol=11/64 p=10418 Δp+=338 Δp-=160 rb=47 lam=4.24e-08 eps=0.0051 plateau=0 tok/s=412 mem=34.81GiB
-[E3-full] step 300/6000 L_tr=2.5857 L_val=2.4272 viol=29/64 p=10618 Δp+=538 Δp-=160 rb=47 lam=2.97e-08 eps=0.0051 plateau=0 tok/s=410 mem=34.85GiB
-[E3-full] step 325/6000 L_tr=2.4458 L_val=2.4051 viol=53/64 p=10818 Δp+=738 Δp-=160 rb=47 lam=2.08e-08 eps=0.0051 plateau=0 tok/s=409 mem=34.89GiB
-[E3-full] step 350/6000 L_tr=2.3871 L_val=2.3902 viol=42/64 p=11018 Δp+=938 Δp-=160 rb=47 lam=1.45e-08 eps=0.0051 plateau=0 tok/s=406 mem=34.93GiB
-[E3-full] step 375/6000 L_tr=2.3883 L_val=2.3764 viol=55/64 p=11217 Δp+=1137 Δp-=160 rb=48 lam=1.02e-08 eps=0.0051 plateau=0 tok/s=405 mem=34.97GiB
-[E3-full] step 400/6000 L_tr=2.5068 L_val=2.3628 viol=41/64 p=11414 Δp+=1334 Δp-=160 rb=51 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=404 mem=35.02GiB
-[E3-full] step 425/6000 L_tr=2.3044 L_val=2.3495 viol=55/64 p=11600 Δp+=1520 Δp-=160 rb=65 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=402 mem=35.05GiB
-[E3-full] step 450/6000 L_tr=2.4089 L_val=2.3397 viol=48/64 p=11790 Δp+=1710 Δp-=160 rb=75 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=400 mem=35.09GiB
-[E3-full] step 475/6000 L_tr=2.4843 L_val=2.3344 viol=57/64 p=11975 Δp+=1895 Δp-=160 rb=90 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=399 mem=35.13GiB
-[E3-full] step 500/6000 L_tr=2.3318 L_val=2.3220 viol=58/64 p=12158 Δp+=2078 Δp-=160 rb=107 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=398 mem=35.17GiB
-[E3-full] step 525/6000 L_tr=2.2918 L_val=2.3184 viol=57/64 p=12329 Δp+=2249 Δp-=160 rb=136 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=396 mem=35.21GiB
-[E3-full] step 550/6000 L_tr=2.2970 L_val=2.3087 viol=57/64 p=12484 Δp+=2404 Δp-=160 rb=181 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=395 mem=35.24GiB
-[E3-full] step 575/6000 L_tr=2.3159 L_val=2.3022 viol=59/64 p=12641 Δp+=2561 Δp-=160 rb=224 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=393 mem=35.27GiB
-[E3-full] step 600/6000 L_tr=2.3476 L_val=2.2979 viol=59/64 p=12798 Δp+=2718 Δp-=160 rb=267 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=392 mem=35.3GiB
-[E3-full] step 625/6000 L_tr=2.3870 L_val=2.3045 viol=55/64 p=12943 Δp+=2863 Δp-=160 rb=322 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=390 mem=35.33GiB
-[E3-full] step 650/6000 L_tr=2.2567 L_val=2.2981 viol=57/64 p=13071 Δp+=2991 Δp-=160 rb=394 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=390 mem=35.36GiB
-[E3-full] step 675/6000 L_tr=2.2814 L_val=2.2824 viol=59/64 p=13198 Δp+=3118 Δp-=160 rb=467 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=388 mem=35.39GiB
-[E3-full] step 700/6000 L_tr=2.3299 L_val=2.2833 viol=59/64 p=13339 Δp+=3259 Δp-=160 rb=526 lam=1.00e-08 eps=0.0051 plateau=1 tok/s=387 mem=35.42GiB
-[E3-full] step 725/6000 L_tr=2.3126 L_val=2.2795 viol=55/64 p=13465 Δp+=3385 Δp-=160 rb=600 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=386 mem=35.44GiB
-[E3-full] step 750/6000 L_tr=2.2138 L_val=2.2773 viol=59/64 p=13594 Δp+=3514 Δp-=160 rb=671 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=385 mem=35.47GiB
-[E3-full] step 775/6000 L_tr=2.2380 L_val=2.2700 viol=59/64 p=13715 Δp+=3635 Δp-=160 rb=750 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=384 mem=35.49GiB
-[E3-full] step 800/6000 L_tr=2.2697 L_val=2.2672 viol=57/64 p=13836 Δp+=3756 Δp-=160 rb=829 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=382 mem=35.52GiB
-[E3-full] step 825/6000 L_tr=2.3251 L_val=2.2691 viol=59/64 p=13968 Δp+=3888 Δp-=160 rb=897 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=381 mem=35.55GiB
-[E3-full] step 850/6000 L_tr=2.2348 L_val=2.2674 viol=57/64 p=14090 Δp+=4010 Δp-=160 rb=975 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=380 mem=35.57GiB
-[E3-full] step 875/6000 L_tr=2.2892 L_val=2.2615 viol=59/64 p=14206 Δp+=4126 Δp-=160 rb=1059 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=379 mem=35.6GiB
-[E3-full] step 900/6000 L_tr=2.2053 L_val=2.2524 viol=60/64 p=14310 Δp+=4230 Δp-=160 rb=1155 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=378 mem=35.62GiB
-[E3-full] step 925/6000 L_tr=2.2126 L_val=2.2589 viol=58/64 p=14428 Δp+=4348 Δp-=160 rb=1237 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=377 mem=35.64GiB
-[E3-full] step 950/6000 L_tr=2.2694 L_val=2.2495 viol=60/64 p=14541 Δp+=4461 Δp-=160 rb=1324 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=376 mem=35.67GiB
-[E3-full] step 975/6000 L_tr=2.2884 L_val=2.2599 viol=59/64 p=14645 Δp+=4565 Δp-=160 rb=1420 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=375 mem=35.69GiB
-[E3-full] step 1000/6000 L_tr=2.2623 L_val=2.2480 viol=60/64 p=14755 Δp+=4675 Δp-=160 rb=1510 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=374 mem=35.71GiB
-[E3-full] step 1025/6000 L_tr=2.2774 L_val=2.2546 viol=61/64 p=14858 Δp+=4778 Δp-=160 rb=1607 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=373 mem=35.73GiB
-[E3-full] step 1050/6000 L_tr=2.3672 L_val=2.2490 viol=58/64 p=14971 Δp+=4891 Δp-=160 rb=1694 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=372 mem=35.76GiB
-[E3-full] step 1075/6000 L_tr=2.2028 L_val=2.2553 viol=59/64 p=15072 Δp+=4992 Δp-=160 rb=1793 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=371 mem=35.78GiB
-[E3-full] step 1100/6000 L_tr=2.2021 L_val=2.2519 viol=58/64 p=15182 Δp+=5102 Δp-=160 rb=1883 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=370 mem=35.8GiB
-[E3-full] step 1125/6000 L_tr=2.3175 L_val=2.2399 viol=61/64 p=15284 Δp+=5204 Δp-=160 rb=1981 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=368 mem=35.82GiB
-[E3-full] step 1150/6000 L_tr=2.2759 L_val=2.2467 viol=57/64 p=15392 Δp+=5312 Δp-=160 rb=2073 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=368 mem=35.84GiB
-[E3-full] step 1175/6000 L_tr=2.1707 L_val=2.2404 viol=59/64 p=15502 Δp+=5422 Δp-=160 rb=2163 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=367 mem=35.87GiB
-[E3-full] step 1200/6000 L_tr=2.2498 L_val=2.2462 viol=61/64 p=15603 Δp+=5523 Δp-=160 rb=2262 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=366 mem=35.89GiB
-[E3-full] step 1225/6000 L_tr=2.3556 L_val=2.2370 viol=61/64 p=15706 Δp+=5626 Δp-=160 rb=2359 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=365 mem=35.91GiB
-[E3-full] step 1250/6000 L_tr=2.3267 L_val=2.3387 viol=62/64 p=15805 Δp+=5725 Δp-=160 rb=2460 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=364 mem=35.93GiB
