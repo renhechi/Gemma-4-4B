@@ -5,3 +5,4 @@ Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/cs
   f"‖w‖²={float(smlp.sq_norm()):.1f}", flush=True)
 [run] E3-full mode=E3 steps=6000 tok/step=262,144 D*=1.573B unique_train=0.718B p=10240 ‖w‖²=35296.1
 [warn] D* exceeds unique train tokens → data wraps (epoch>1) after 0.46 D*
+[E3-full] step 25/6000 L_tr=4.9730 L_val=5.0336 viol=0/64 p=10112 Δp+=0 Δp-=128 rb=0 lam=1.05e-06 eps=0.0050 plateau=0 tok/s=471 mem=34.34GiB
