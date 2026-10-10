@@ -89,3 +89,4 @@ Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/cs
 [run] E3-full mode=E3 steps=6000 tok/step=262,144 D*=1.573B unique_train=0.718B p=15603 ‖w‖²=11480939.0
 [warn] D* exceeds unique train tokens → data wraps (epoch>1) after 0.46 D*
 [E3-full] step 1225/6000 L_tr=2.7101 L_val=2.7705 viol=57/64 p=15689 Δp+=5609 Δp-=160 rb=2376 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=368 mem=36.14GiB
+[E3-full] step 1250/6000 L_tr=2.7241 L_val=2.7866 viol=62/64 p=15795 Δp+=5715 Δp-=160 rb=2470 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=367 mem=36.16GiB
