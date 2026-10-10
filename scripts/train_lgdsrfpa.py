@@ -445,6 +445,7 @@ def main() -> int:
     plateau_streak = 0
     best_val = math.inf
     wall0 = 0.0
+    data_offset = 0                                                      # step at which the current dataset started
     ck = out / "latest.pt"
     if ck.exists():
         s = torch.load(ck, map_location=device, weights_only=False)
@@ -469,6 +470,18 @@ def main() -> int:
                 fh.writelines(stale)
             with open(mpath, "w") as fh:
                 fh.writelines(l for l in rows if l not in stale)
+        # dataset switch on resume (2026-10-10: E3-full continued from step 1200 on dfin_v2):
+        # new data is read from its beginning, and L_val-based state is reset (different val set).
+        dfin_now = str(cfg["data"]["dfin_dir"])
+        dfin_prev = s.get("dfin_dir", str(ROOT / "data/dfin"))
+        data_offset = s.get("data_offset", 0)
+        if dfin_prev != dfin_now:
+            data_offset = step
+            prev_val, val_change, plateau_streak, best_val, best_ema, ema = None, None, 0, math.inf, math.inf, None
+            log(dict(event="data_switch", at_step=step, from_dfin=dfin_prev, to_dfin=dfin_now,
+                     data_offset=data_offset, new_unique_train_tokens=int(uniq_train),
+                     note="new data read from its start; prev_val/plateau/best_val/EMA reset (different val set)"))
+            print(f"[data] switch {dfin_prev} → {dfin_now} at step {step}; data_offset={data_offset}", flush=True)
         log(dict(event="resume", from_step=step, discarded_rows=len(stale)))
         print(f"[resume] step={step} p={smlp.p} lam={ctrl.lam:.2e} discarded_rows={len(stale)}", flush=True)
     else:
@@ -496,7 +509,7 @@ def main() -> int:
             g["lr"] = lr
         l_sum = 0.0
         for a in range(accum):
-            base_i = (step * accum + a) * mb
+            base_i = ((step - data_offset) * accum + a) * mb
             ids = to_ids([data.train_seq(base_i + j) for j in range(mb)], device)
             cap.on = a == accum - 1
             loss = clm_loss(model, ids)
@@ -563,7 +576,7 @@ def main() -> int:
                        peak_alloc_gib=round(torch.cuda.max_memory_allocated() / 2**30, 2),
                        device_used_gib=round((total - free) / 2**30, 2),
                        wall_clock_seconds=round(time.perf_counter() - wall_start, 1),
-                       epoch=round(step * tok_per_step / uniq_train, 4), **ctrl.c)
+                       epoch=round((step - data_offset) * tok_per_step / uniq_train, 4), **ctrl.c)
             t_int, tok_int = time.perf_counter(), 0
             print(f"[{args.experiment}] step {step}/{total_steps} L_tr={L_train:.4f} L_val={L_val:.4f} "
                   f"viol={row['violation_count']}/{n_ref} p={smlp.p} Δp+={ctrl.c['delta_p_plus']} "
@@ -590,7 +603,8 @@ def main() -> int:
                         "opt": optimizer.state_dict(), "counters": ctrl.c, "lam": ctrl.lam, "eps": ctrl.eps,
                         "step": step, "prev_val": prev_val, "plateau_streak": plateau_streak,
                         "best_ema": best_ema, "ema": ema, "best_val": best_val, "rng": torch.get_rng_state(),
-                        "wall": time.perf_counter() - wall_start}, tmp)
+                        "wall": time.perf_counter() - wall_start,
+                        "dfin_dir": str(cfg["data"]["dfin_dir"]), "data_offset": data_offset}, tmp)
             os.replace(tmp, ck)
         if stop_reason:
             print(f"[stop] {stop_reason} at step {step} ({step * tok_per_step / d_star:.3f} D*)", flush=True)

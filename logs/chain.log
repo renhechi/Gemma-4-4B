@@ -15,3 +15,6 @@
 [chain] 2026-10-09 17:37:42 PAUSED by user (away >1 month, machine powered off). Resume from latest.pt = step 1200 (copy: ckpt_step1200_pre_instability.pt). Pending decision A/B/C (see docs/RESUME_NOTE.md)
 [chain] 2026-10-10 05:46:57 start E3-full on dfin_v2 (complete-information + normalized); old run archived as E3-full_dfin_v1
 [chain] 2026-10-10 05:46:57 start E3-full (try 1)
+[chain] 2026-10-10 10:05:16 user: continue ORIGINAL E3-full (not from 0). Fresh v2 run (steps 1–27) archived as E3-full_dfin_v2_from0_aborted; restoring E3-full, resume from step 1200 on dfin_v2
+[chain] 2026-10-10 10:08:51 resume original E3-full from step 1200 on dfin_v2 (data_switch handling tested)
+[chain] 2026-10-10 10:08:51 start E3-full (try 1)
