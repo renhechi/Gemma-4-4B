@@ -95,3 +95,4 @@ Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/cs
 [E3-full] step 1325/6000 L_tr=2.7438 L_val=2.7659 viol=62/64 p=16099 Δp+=6019 Δp-=160 rb=2766 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=365 mem=36.23GiB
 [E3-full] step 1350/6000 L_tr=2.7742 L_val=2.7569 viol=60/64 p=16207 Δp+=6127 Δp-=160 rb=2858 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=364 mem=36.25GiB
 [E3-full] step 1375/6000 L_tr=2.6728 L_val=2.7545 viol=60/64 p=16318 Δp+=6238 Δp-=160 rb=2947 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=363 mem=36.27GiB
+[E3-full] step 1400/6000 L_tr=2.8159 L_val=2.7646 viol=57/64 p=16432 Δp+=6352 Δp-=160 rb=3033 lam=1.00e-08 eps=0.0051 plateau=0 tok/s=362 mem=36.29GiB

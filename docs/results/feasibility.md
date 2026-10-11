@@ -1,4 +1,4 @@
 | track | experiment | can run | tokens/s (median) | peak alloc GiB | device used GiB | wall-clock h | stop |
 |---|---|---|---|---|---|---|---|
-| ASUS GX10 | E3-full | yes | 378 | 36.27 | 81.61 | 283.5 | running |
+| ASUS GX10 | E3-full | yes | 378 | 36.29 | 81.61 | 288.6 | running |
 | AI-Stack (AMD MI300/ROCm/DeepSpeed) | — | not run on this machine | — | — | — | — | — |
