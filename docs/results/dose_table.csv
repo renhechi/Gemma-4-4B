@@ -1,1 +1,2 @@
 experiment,dose,tokens_B,L_train,L_val,delta_L_t,gap,acceptability,violations,struct_triggers,dp_plus,dp_minus,rollback,lam,p,plateau
+E3-full,0.25,0.3932,2.75099,2.74413,0.009433910250663757,-0.00687,0.0938,58,1287,6835,160,3350,1e-08,16915,False
