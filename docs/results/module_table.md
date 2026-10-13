@@ -1,3 +1,3 @@
 | exp | struct triggers | repair attempts | repair success | isolate fail | Δp+ | Δp− | rollback | NT rounds | NT Fail | final p | final λ |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| E3-full | 1337 | 10782 | 7068 | 209 | 7068 | 160 | 3517 | 3 | 12 | 17148 | 1.00e-08 |
+| E3-full | 1362 | 10992 | 7202 | 219 | 7202 | 160 | 3583 | 3 | 12 | 17282 | 1.00e-08 |
