@@ -1,0 +1,70 @@
+[collect]
+  news      +153,821  (dropped incomplete 8,436)
+  esg       +26,853  (dropped incomplete 2,208)
+  esg_ocr   +1,081  (dropped incomplete 225)
+  esg_ocr   +33,069  (dropped incomplete 4,959)
+  annual    +213,179  (dropped incomplete 149,544)
+  annual_tbl +11,615  (dropped incomplete 105)
+  (annual: 559 reports replaced by table-preserving relayout)
+  acad      +704  (dropped incomplete 3,827)
+  fin_news  +330  (dropped incomplete 0)
+  penalty   +486  (dropped incomplete 0)
+  law       (articles, no chunking)
+  ins_law   (articles, no chunking)
+  edgar     +60,430 (of 297,154 available)
+[dedup] kept 447,952 docs (heldout-excluded 63)
+[tok] encoding with 16 workers …
+  256/447,952 docs  0.5M tok
+  51,456/447,952 docs  94.5M tok
+  102,656/447,952 docs  188.5M tok
+  153,856/447,952 docs  282.5M tok
+  205,056/447,952 docs  376.9M tok
+  256,256/447,952 docs  470.7M tok
+  307,456/447,952 docs  565.0M tok
+  358,656/447,952 docs  659.3M tok
+  409,856/447,952 docs  753.4M tok
+{
+  "tokenizer": "/home/renhe/gemma4_pretrain/models/gemma-4-E4B-it",
+  "n_docs": 447952,
+  "n_val_docs": 2239,
+  "total_tokens": 823397803,
+  "val_tokens": 4160322,
+  "train_tokens": 819237481,
+  "tokens_by_cat": {
+    "annual": 467160366,
+    "edgar": 65185208,
+    "news": 145308121,
+    "annual_tbl": 26247363,
+    "esg_ocr": 57979220,
+    "esg": 56940986,
+    "acad": 1260579,
+    "ins_law": 780952,
+    "law": 558108,
+    "penalty": 1419016,
+    "fin_news": 557884
+  },
+  "cats": [
+    "acad",
+    "annual",
+    "annual_tbl",
+    "edgar",
+    "esg",
+    "esg_ocr",
+    "fin_news",
+    "ins_law",
+    "law",
+    "news",
+    "penalty"
+  ],
+  "chunk_chars": 3000,
+  "upsample": {
+    "law": 4,
+    "ins_law": 4,
+    "penalty": 2
+  },
+  "heldout_excluded": 63,
+  "seed": 42,
+  "version": "v3-excise-complete-tables",
+  "normalization": "NFC + fullwidth alnum→halfwidth + special spaces→space + zero-width removed + fullwidth digit separators in numbers→ASCII (no NFKC: keeps CJK punctuation)",
+  "filter": "drop chunk if >30% non-table lines are bare numbers or mean line len < 8; relayout tables replace text-layer annual"
+}
