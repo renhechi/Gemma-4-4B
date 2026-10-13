@@ -19,3 +19,5 @@
 [chain] 2026-10-10 10:08:51 resume original E3-full from step 1200 on dfin_v2 (data_switch handling tested)
 [chain] 2026-10-10 10:08:51 start E3-full (try 1)
 [chain] 2026-10-13 19:07:16 stopped at checkpoint step 1600 for GPU cold drain (stop_at_ckpt.sh)
+[chain] 2026-10-13 19:07:19 switch data → /home/renhe/gemma4_pretrain/data/dfin_v3 at step 1600, resume E3-full
+[chain] 2026-10-13 19:07:19 start E3-full (try 1)

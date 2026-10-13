@@ -1,0 +1,3 @@
+Gemma4 E3-full 已在 step 1600 checkpoint 停止,可以冷關機(拔電源)了
+20:  dfin_dir: /home/renhe/gemma4_pretrain/data/dfin_v3   # 2026-10-13: switched at step 1600 (build_dfin_v3.py: broken tables excised, tables complete)
+[switch] done
