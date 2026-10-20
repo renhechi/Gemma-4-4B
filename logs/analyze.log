@@ -4,11 +4,11 @@
 
 | exp | struct triggers | repair attempts | repair success | isolate fail | Δp+ | Δp− | rollback | NT rounds | NT Fail | final p | final λ |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| E3-full | 2137 | 17196 | 11732 | 223 | 11732 | 160 | 5253 | 3 | 12 | 21812 | 1.00e-08 |
+| E3-full | 2162 | 17396 | 11875 | 223 | 11875 | 160 | 5310 | 3 | 12 | 21955 | 1.00e-08 |
 
 | track | experiment | can run | tokens/s (median) | peak alloc GiB | device used GiB | wall-clock h | stop |
 |---|---|---|---|---|---|---|---|
-| ASUS GX10 | E3-full | yes | 363 | 37.49 | 89.54 | 493.5 | running |
+| ASUS GX10 | E3-full | yes | 362 | 37.52 | 89.54 | 499.3 | running |
 | AI-Stack (AMD MI300/ROCm/DeepSpeed) | — | not run on this machine | — | — | — | — | — |
 
 → /home/renhe/gemma4_pretrain/docs/results
