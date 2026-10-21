@@ -21,3 +21,4 @@
 [chain] 2026-10-13 19:07:16 stopped at checkpoint step 1600 for GPU cold drain (stop_at_ckpt.sh)
 [chain] 2026-10-13 19:07:19 switch data → /home/renhe/gemma4_pretrain/data/dfin_v3 at step 1600, resume E3-full
 [chain] 2026-10-13 19:07:19 start E3-full (try 1)
+[chain] 2026-10-22 06:12:21 PAUSED by user at step ~2519 (resume ckpt = step 2500, dfin_v3) — GPU needed for IEEE paper supplementary experiments
