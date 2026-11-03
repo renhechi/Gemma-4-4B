@@ -47,6 +47,13 @@
 - 447,952 篇,train **0.819B** tokens、val 4.2M。
 - 切換:`scripts/switch_data_at_ckpt.sh 1600 data/dfin_v3`(step 1600 checkpoint 寫入後停止→改 config→續跑;trainer data_switch 邏輯自動從 v3 開頭讀、重設 L_val 狀態)。
 
+## 2d. E3-full 結束、改跑 E1/E2(2026-11-03,使用者決定)
+
+- E3-full 以 **step 2500** 結束(`runs/E3-full/final_step2500.pt`;資料歷程 v1 0–1200、v2 1200–1600、v3 1600–2500)。
+- 結束時狀態:v3 上 L_val 以 8-eval 區塊平均持續緩降(2.7001 → 2.6783 → 2.6691 → 2.6605 → 2.6532),**屬緩慢收斂而非發散**;
+  early stop 未觸發(下降幅度已小於 eval 雜訊 ±0.01),Structuring 迴圈使 p 達 22,608(2.2×)、速度降至 ~315 tok/s。
+- E1-full、E2-full 自 step 0 起**全程使用 dfin_v3**(與 E3 的混合資料歷程不同 — 比較 E1/E2/E3 時需註明,建議以 v3 上同 token 量的 L_val 比較)。
+
 ## 3. 實驗矩陣(ED §4.6)
 
 | 實驗 | 指令 | 模組 | 主要輸出 |
