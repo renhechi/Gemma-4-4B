@@ -1,5 +1,6 @@
 | exp | dose | tokens (B) | L_val | ΔL_t | gap | acc. | viol | struct | Δp+ | Δp− | rollback | p | plateau |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| E1-full | 0.25 D* | 0.393 | 2.5643 | 0.0010 | 0.0544 | 1.000 | 0 | 88 | 0 | 0 | 0 | 10240 | False |
 | E3-full | 0.25 D* | 0.393 | 2.7441 | 0.0094 | -0.0069 | 0.094 | 58 | 1287 | 6835 | 160 | 3350 | 16915 | False |
 
 | exp | struct triggers | repair attempts | repair success | isolate fail | Δp+ | Δp− | rollback | NT rounds | NT Fail | final p | final λ |
@@ -9,7 +10,7 @@
 
 | track | experiment | can run | tokens/s (median) | peak alloc GiB | device used GiB | wall-clock h | stop |
 |---|---|---|---|---|---|---|---|
-| ASUS GX10 | E1-full | yes | 494 | 34.19 | 117.72 | 217.4 | running |
+| ASUS GX10 | E1-full | yes | 494 | 34.19 | 117.72 | 221.1 | running |
 | ASUS GX10 | E3-full | yes | 359 | 37.66 | 90.62 | 528.1 | user_stop_step2500 (slow convergence on v3; structuring loop p=22608; switch to E1/E2) |
 | AI-Stack (AMD MI300/ROCm/DeepSpeed) | — | not run on this machine | — | — | — | — | — |
 
