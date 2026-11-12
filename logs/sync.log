@@ -1571,3 +1571,8 @@ fatal: 無法讀取遠端版本庫。
 
 請確認您有正確的存取權限並且版本庫存在。
 [sync] 2026-11-13 03:06:39 push FAILED
+ssh: Could not resolve hostname github.com: Temporary failure in name resolution
+fatal: 無法讀取遠端版本庫。
+
+請確認您有正確的存取權限並且版本庫存在。
+[sync] 2026-11-13 04:06:41 push FAILED
