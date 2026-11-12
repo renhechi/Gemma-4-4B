@@ -67,3 +67,7 @@ Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/cs
 [E1-full] step 1500/6000 L_tr=2.5100 L_val=2.5643 viol=0/64 p=10240 Δp+=0 Δp-=0 rb=0 lam=0.00e+00 eps=0.0050 plateau=1 tok/s=494 mem=34.19GiB
 [dose] 0.25 D* checkpoint saved
 [E1-full] step 1525/6000 L_tr=2.5154 L_val=2.5637 viol=0/64 p=10240 Δp+=0 Δp-=0 rb=0 lam=0.00e+00 eps=0.0050 plateau=2 tok/s=494 mem=34.19GiB
+[E1-full] step 1550/6000 L_tr=2.5710 L_val=2.5630 viol=0/64 p=10240 Δp+=0 Δp-=0 rb=0 lam=0.00e+00 eps=0.0050 plateau=3 tok/s=494 mem=34.19GiB
+[dose] 0.26 D* checkpoint saved
+[stop] early_stop_plateau at step 1550 (0.258 D*)
+[done] E1-full step=1550 p=10240 {'structuring_trigger_count': 88, 'delta_p_plus': 0, 'delta_p_minus': 0, 'rollback_count': 0, 'repair_attempts': 0, 'repair_success': 0, 'isolate_fail': 0, 'nt_rounds': 0, 'nt_fail_total': 0, 'struct_fail_streak': 0}
