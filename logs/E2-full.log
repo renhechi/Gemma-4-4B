@@ -74,3 +74,4 @@ Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/cs
   f"‖w‖²={float(smlp.sq_norm()):.1f}", flush=True)
 [run] E2-full mode=E2 steps=6000 tok/step=262,144 D*=1.573B unique_train=0.819B p=19625 ‖w‖²=10508427.0
 [warn] D* exceeds unique train tokens → data wraps (epoch>1) after 0.52 D*
+[E2-full] step 1525/6000 L_tr=2.6042 L_val=2.6378 viol=56/64 p=19746 Δp+=9506 Δp-=0 rb=2123 lam=0.00e+00 eps=0.0050 plateau=0 tok/s=344 mem=36.87GiB
