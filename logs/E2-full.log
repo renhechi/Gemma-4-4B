@@ -66,3 +66,11 @@ Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/cs
 [E2-full] step 1475/6000 L_tr=2.5604 L_val=2.6534 viol=61/64 p=19501 Δp+=9261 Δp-=0 rb=1968 lam=0.00e+00 eps=0.0050 plateau=1 tok/s=346 mem=35.99GiB
 [E2-full] step 1500/6000 L_tr=2.5836 L_val=2.6334 viol=57/64 p=19625 Δp+=9385 Δp-=0 rb=2044 lam=0.00e+00 eps=0.0050 plateau=0 tok/s=345 mem=36.01GiB
 [dose] 0.25 D* checkpoint saved
+[load] /home/renhe/gemma4_pretrain/models/gemma-4-E4B-it
+Loading weights:   0%|          | 0/2076 [00:00<?, ?it/s]Loading weights:  41%|████      | 845/2076 [00:00<00:00, 8423.40it/s]Loading weights:  81%|████████▏ | 1688/2076 [00:00<00:00, 7631.74it/s]Loading weights: 100%|██████████| 2076/2076 [00:00<00:00, 7974.88it/s]
+[resume] step=1500 p=19625 lam=0.00e+00 discarded_rows=0
+/home/renhe/gemma4_pretrain/scripts/train_lgdsrfpa.py:496: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  f"‖w‖²={float(smlp.sq_norm()):.1f}", flush=True)
+[run] E2-full mode=E2 steps=6000 tok/step=262,144 D*=1.573B unique_train=0.819B p=19625 ‖w‖²=10508427.0
+[warn] D* exceeds unique train tokens → data wraps (epoch>1) after 0.52 D*

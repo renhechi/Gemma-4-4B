@@ -374,6 +374,7 @@ def main() -> int:
     ap.add_argument("--n-ref", type=int)
     ap.add_argument("--min-stop-steps", type=int, help="test only: early-stop min_steps")
     ap.add_argument("--plateau-delta", type=float, help="test only: plateau ΔL threshold")
+    ap.add_argument("--stop-at-step", type=int, default=0, help="stop at this step via the early-stop path (user decision)")
     args = ap.parse_args()
 
     cfg = yaml.safe_load(Path(args.config).read_text())
@@ -534,6 +535,8 @@ def main() -> int:
         best_ema = min(best_ema, ema)
         if step > 50 and ema > cfg["safety"]["divergence_factor"] * best_ema:
             stop_reason = "divergence"
+        if args.stop_at_step and step >= args.stop_at_step:
+            stop_reason = f"user_stop_at_step_{args.stop_at_step}"
 
         row = dict(event="step", step=step, tokens_seen=step * tok_per_step, L_train=round(L_train, 5), epsilon=ctrl.eps,
                    lr=lr, grad_norm=round(gn, 4), lam=ctrl.lam, p=smlp.p,

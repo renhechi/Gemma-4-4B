@@ -1,0 +1,2 @@
+Gemma4 E2-full 已在 step 1500 checkpoint 停止,可以冷關機(拔電源)了
+patched scripts/train_lgdsrfpa.py

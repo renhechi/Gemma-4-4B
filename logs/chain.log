@@ -27,3 +27,4 @@
 [chain] 2026-11-03 08:48:01 start E1-full (try 1)
 [chain] 2026-11-12 21:23:21 start E2-full (try 1)
 [chain] 2026-11-25 01:23:59 stopped at checkpoint step 1500 for GPU cold drain (stop_at_ckpt.sh)
+[chain] 2026-11-25 01:24:02 E2-full: resume 1500→1550 with --stop-at-step 1550 (align with E1 early stop)
