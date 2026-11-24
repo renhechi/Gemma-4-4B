@@ -54,6 +54,11 @@
   early stop 未觸發(下降幅度已小於 eval 雜訊 ±0.01),Structuring 迴圈使 p 達 22,608(2.2×)、速度降至 ~315 tok/s。
 - E1-full、E2-full 自 step 0 起**全程使用 dfin_v3**(與 E3 的混合資料歷程不同 — 比較 E1/E2/E3 時需註明,建議以 v3 上同 token 量的 L_val 比較)。
 
+## 2e. E5 範圍(2026-11-24 研究決定)
+
+AI-Stack(AMD MI300/ROCm/DeepSpeed)軌道**不採用**;E5 僅報告 ASUS GX10 單機軌道(`scripts/e5_feasibility.py` → `docs/results/E5_feasibility.md`):
+各實驗 can-run、tok/s、GPU 記憶體峰值、實際訓練時間、續跑次數,以及執行環境事件(PD 控制器卡死、GPU 共用、網路中斷、結構成長造成的減速)。
+
 ## 3. 實驗矩陣(ED §4.6)
 
 | 實驗 | 指令 | 模組 | 主要輸出 |

@@ -99,7 +99,7 @@
 | GPU 狀態 | 冷斷電後 ~2,390 MHz / 85–92 W(2026-10-01 前 PD 卡死:650 MHz / 16 W) |
 | 速度 | ~500 tok/s 基本;含逐步檢核與 Node-Adding 約 390 tok/s |
 | GPU 記憶體峰值 | ~35 GiB |
-| AI-Stack(AMD MI300)軌道 | 本機未執行 |
+| AI-Stack(AMD MI300)軌道 | **本研究不採用**(2026-11-24 研究決定);E5 僅 GX10 軌道 |
 
 ## 10. 實驗矩陣(ED §4.6)
 
@@ -109,4 +109,4 @@
 | E1-full | Weight-Tuning only | 排程(E3 完成後) |
 | E2-full | + Structuring | 排程(E1 完成後) |
 | E4 | corpus-dose 觀測(由上述 run 產出) | — |
-| E5 | GX10 可行性(tokens/s、記憶體、wall-clock) | — |
+| E5 | GX10 可行性(tokens/s、記憶體、wall-clock) | `docs/results/E5_feasibility.md`(AMD 軌道不採用) |
