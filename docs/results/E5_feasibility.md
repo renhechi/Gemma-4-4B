@@ -10,7 +10,7 @@
 | 實驗 | can run | 結束方式 | 訓練步數 | tokens | 實際訓練時間 | tok/s(PD 正常期,中位數) | GPU 記憶體峰值 | 續跑次數 |
 |---|---|---|---|---|---|---|---|---|
 | E1 | yes | early_stop_plateau | 1550 | 406M | 228.3 h (9.5 d) | 494 | 34.2 GiB | 0 |
-| E2 | yes | running | 1461 | 383M | 283.4 h (11.8 d) | 386 | 36.0 GiB | 0 |
+| E2 | yes | user_stop_at_step_1550 | 1550 | 406M | 302.5 h (12.6 d) | 383 | 36.9 GiB | 1 |
 | E3 | yes | user_stop_step2500 | 2500 | 655M | 579.9 h (24.2 d) | 364 | 37.7 GiB | 4 |
 
 實際訓練時間 = 相鄰步紀錄間隔 < 2 h 者加總(排除停機/等待),含被捨棄重跑的區段。
@@ -40,6 +40,6 @@
 | 軌道 | can run | tokens/s | peak memory | wall-clock | 備註 |
 |---|---|---|---|---|---|
 | ASUS GX10 – E1 | yes | 494 | 34.2 GiB | 見 §1 | |
-| ASUS GX10 – E2 | yes | 386 | 36.0 GiB | 見 §1 | |
+| ASUS GX10 – E2 | yes | 383 | 36.9 GiB | 見 §1 | |
 | ASUS GX10 – E3 | yes | 364 | 37.7 GiB | 見 §1 | |
 | AI-Stack(AMD MI300) | — | — | — | — | 本研究不採用(研究決定),未執行 |
