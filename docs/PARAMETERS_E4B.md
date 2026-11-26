@@ -105,8 +105,8 @@
 
 | 實驗 | 模組 | 狀態 |
 |---|---|---|
-| E3-full | Weight-Tuning + Structuring + Network-Tuning | 執行中 |
-| E1-full | Weight-Tuning only | 排程(E3 完成後) |
-| E2-full | + Structuring | 排程(E1 完成後) |
-| E4 | corpus-dose 觀測(由上述 run 產出) | — |
+| E3-full | Weight-Tuning + Structuring + Network-Tuning | 結束於 step 2500(0.417 D*;資料 v1→v2→v3) |
+| E1-full | Weight-Tuning only | 早停於 step 1550(0.258 D*) |
+| E2-full | + Structuring | 結束於 step 1550(使用者決定,與 E1 同點) |
+| E4 | corpus-dose 觀測(由上述 run 產出) | `docs/results/E4_dose_response.md`(細粒度) |
 | E5 | GX10 可行性(tokens/s、記憶體、wall-clock) | `docs/results/E5_feasibility.md`(AMD 軌道不採用) |

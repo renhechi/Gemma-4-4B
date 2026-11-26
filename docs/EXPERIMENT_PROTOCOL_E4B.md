@@ -59,6 +59,20 @@
 AI-Stack(AMD MI300/ROCm/DeepSpeed)軌道**不採用**;E5 僅報告 ASUS GX10 單機軌道(`scripts/e5_feasibility.py` → `docs/results/E5_feasibility.md`):
 各實驗 can-run、tok/s、GPU 記憶體峰值、實際訓練時間、續跑次數,以及執行環境事件(PD 控制器卡死、GPU 共用、網路中斷、結構成長造成的減速)。
 
+## 2f. E4 細粒度劑量反應(2026-11-26)
+
+`scripts/e4_dose_analysis.py` → `docs/results/E4_dose_response.md`、`E4_dose_curve.{csv,png}`。原設計 4 個 dose 點;因 E1 於 0.258 D* 早停、E2 同點結束、E3 於 0.417 D* 結束,0.5 D* 以上無觀測,改以每 25 步的 L_val(每點 0.00417 D*)為劑量觀測。E3 依資料版本分段(v1/v2/v3,各自 val 集不同),與 E1/E2 比較只用 E3-v3 段(以該段 v3 tokens 計 dose;進入 v3 時結構已 p≈17.5k)。
+
+主要觀察(v3 val 集):
+- E1:90%/95%/99% 改善分別在 0.062/0.104/0.188 D*;|ΔL| 平滑指數衰減(半衰期 0.036 D*),L_val 從未回升,0.25 D* 附近跌破 1e-3 → 早停。最後 0.05 D* 邊際改善僅 0.0024。
+- E2:0.10 D* 前與 E1 幾乎重疊(甚至略低),0.10 D* 後落後並擴大至 +0.07–0.08;|ΔL| 停在 0.003–0.02 鋸齒(23% 的 eval L_val 回升),不跌破門檻 → 早停規則在 E2/E3 無法觸發的原因是迴圈造成的震盪,而非仍有大幅改善空間。
+- E3-v3:900 步(0.15 D*)僅 2.708 → 2.648;49% 的 eval L_val 回升,ΔL 不衰減。
+- 結論:在本設定下 corpus dose 的效益集中在前 ~0.1 D*;0.25 D*(≈20 × N_FFN × 0.25 ≈ 5 tokens/參數)已達 E1 收斂,D* 上限未被需要。
+
+## 2g. 最終評估之 PPL 量測修正(2026-11-26)
+
+D_fin 以 EOS 串接、**無 BOS** 打包,訓練序列皆不以 BOS 開頭。`eval_final.py` 原 PPL 以 `add_special_tokens=False` 計算(無 BOS),對 Gemma base 屬分布外輸入(smoke 10 篇:base zh 67.4 / en 104.8;加 BOS 後 7.27 / 15.7)。若只報無 BOS PPL,會把「學會在無 BOS 下運作」誤計為領域改善(E3 無 BOS 9.62 vs 有 BOS 7.86)。**主指標改為有 BOS 的 PPL**(Gemma 標準用法),無 BOS 列為次要欄位 `ppl_*_nobos`。QA 與專家題的生成經 chat template,本來就含 BOS,不受影響。另:`final_step2500.pt` 無 `layer` 鍵,預設最後一層(-1 = 41)。
+
 ## 3. 實驗矩陣(ED §4.6)
 
 | 實驗 | 指令 | 模組 | 主要輸出 |
@@ -128,6 +142,7 @@ conda run -n gemma3_env python3 scripts/eval_final.py --ckpt runs/E1-full/dose_1
 
 - CLM loss:所有 checkpoint(主指標)。
 - 自動評估:FinKD held-out PPL(zh/en)、qa_benchmark_350_zh(數值抽取/計算)。注意:QA context 來自 EDGAR/年報,可能與 D_fin 重疊 → 報告時需附 contamination 註記(可沿用 gemma3 track 的 flag_contamination.py)。
+- 2026-11-26 執行:base、E1(`stop_0.2583Dstar.pt`)、E2(`stop_0.2583Dstar.pt`)、E3(`final_step2500.pt`),結果 `docs/results/final_eval.json`、專家題答案 `final_eval_expert_answers.json`(四個模型皆生成,可另做 base vs E1 kit:`--kit-pair base,E1`)。
 - 專業人士:**只一次**,base vs E3 最終模型,30 題(eval/expert_questions.jsonl,6 類,請審閱修改),A/B 隨機匿名 + 5 構面 rubric。
 - AI 輔助 rubric 評分:可選,限中間 checkpoint,論文中表述為「AI 輔助判讀」。
 

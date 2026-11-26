@@ -46,20 +46,28 @@ def load(ckpt: str | None):
     m.to("cuda").eval()
     if ckpt:
         s = torch.load(ckpt, map_location="cuda", weights_only=False)
-        layer = m.model.language_model.layers[s["layer"]]
+        layer = m.model.language_model.layers[s.get("layer", -1)]
         smlp = StructGatedFFN(layer.mlp)
         for n, t in s["mlp"].items():
             setattr(smlp, n, nn.Parameter(t.to("cuda")))
         layer.mlp = smlp
-        print(f"[load] {ckpt}: layer {s['layer']} p={smlp.p} dose={s.get('dose')} tokens={s.get('tokens_seen')}")
+        print(f"[load] {ckpt}: layer {s.get('layer', -1)} p={smlp.p} dose={s.get('dose')} tokens={s.get('tokens_seen')}")
     return m, tok
 
 
+LIMIT = 0
+
+
 @torch.no_grad()
-def ppl(m, tok, path, max_len=1024):
+def ppl(m, tok, path, max_len=1024, bos=True):
     nll = n = 0
-    for line in open(path):
-        ids = tok(json.loads(line)["text"], add_special_tokens=False, return_tensors="pt")["input_ids"][:, :max_len].cuda()
+    for i, line in enumerate(open(path)):
+        if LIMIT and i >= LIMIT:
+            break
+        ids = tok(json.loads(line)["text"], add_special_tokens=False, return_tensors="pt")["input_ids"][:, :max_len - 1]
+        if bos:  # standard Gemma usage; training data (packed, EOS-separated) never had BOS → also report no-BOS
+            ids = torch.cat([torch.tensor([[tok.bos_token_id]]), ids], 1)
+        ids = ids.cuda()
         if ids.shape[1] < 16:
             continue
         loss = m(input_ids=ids, labels=ids).loss.float().item()
@@ -86,6 +94,8 @@ def generate(m, tok, prompts, max_new=40, B=8):
 
 def qa_eval(m, tok):
     qa = [json.loads(l) for l in open(QA)]
+    if LIMIT:
+        qa = qa[:LIMIT]
     preds = generate(m, tok, [f"{q['context']}\n\n問題：{q['question']}" for q in qa])
     hit = {"extract": [0, 0], "compute": [0, 0]}
     for q, p in zip(qa, preds):
@@ -99,33 +109,51 @@ def qa_eval(m, tok):
 
 
 def main():
+    global LIMIT
     ap = argparse.ArgumentParser()
-    ap.add_argument("--ckpt", action="append", default=[])
+    ap.add_argument("--ckpt", action="append", default=[], help="NAME=path, e.g. E3=runs/E3-full/final_step2500.pt")
     ap.add_argument("--expert-kit", action="store_true")
+    ap.add_argument("--kit-pair", default="", help="A,B names for the blind kit (default: base,<last ckpt>)")
     ap.add_argument("--skip-qa", action="store_true")
+    ap.add_argument("--limit", type=int, default=0, help="smoke test: first N docs/questions")
+    ap.add_argument("--out", default=str(OUT / "final_eval.json"))
     args = ap.parse_args()
+    LIMIT = args.limit
     OUT.mkdir(parents=True, exist_ok=True)
-    res, expert = {}, {}
+    outp = Path(args.out)
+    res = json.loads(outp.read_text()) if outp.exists() else {}
+    ansp = outp.with_name(outp.stem + "_expert_answers.json")
+    expert = json.loads(ansp.read_text()) if ansp.exists() else {}
     qs = [json.loads(l) for l in open(ROOT / "eval/expert_questions.jsonl")] if args.expert_kit else []
-    for ck in [None] + args.ckpt:
-        name = "base" if ck is None else Path(ck).parent.name + "/" + Path(ck).stem
+    if LIMIT:
+        qs = qs[:max(1, LIMIT // 10)]
+    specs = [("base", None)] + [tuple(c.split("=", 1)) if "=" in c else (Path(c).parent.name, c) for c in args.ckpt]
+    for name, ck in specs:
+        if name in res and (not qs or name in expert):
+            print(f"[skip] {name} already done", flush=True)
+            continue
         m, tok = load(ck)
-        r = {"ppl_zh": round(ppl(m, tok, HELD / "zh_heldout.jsonl"), 4),
-             "ppl_en": round(ppl(m, tok, HELD / "en_heldout.jsonl"), 4)}
+        r = {"ckpt": ck or "base",
+             "ppl_zh": round(ppl(m, tok, HELD / "zh_heldout.jsonl"), 4),
+             "ppl_en": round(ppl(m, tok, HELD / "en_heldout.jsonl"), 4),
+             "ppl_zh_nobos": round(ppl(m, tok, HELD / "zh_heldout.jsonl", bos=False), 4),
+             "ppl_en_nobos": round(ppl(m, tok, HELD / "en_heldout.jsonl", bos=False), 4)}
         if not args.skip_qa:
             r.update(qa_eval(m, tok))
-        if qs and (ck is None or ck == args.ckpt[-1]):
-            expert[name] = generate(m, tok, [q["question"] for q in qs], max_new=512, B=4)
         res[name] = r
+        outp.write_text(json.dumps(res, ensure_ascii=False, indent=2))
         print(name, r, flush=True)
+        if qs:
+            expert[name] = generate(m, tok, [q["question"] for q in qs], max_new=512, B=4)
+            ansp.write_text(json.dumps(expert, ensure_ascii=False, indent=1))
         del m
         torch.cuda.empty_cache()
-    (OUT / "final_eval.json").write_text(json.dumps(res, ensure_ascii=False, indent=2))
 
-    if qs and len(expert) == 2:
-        kit = OUT / "expert_kit"
+    if qs:
+        a_name, b_name = (args.kit_pair.split(",") if args.kit_pair else ["base", specs[-1][0]])
+        a, b = expert[a_name], expert[b_name]
+        kit = OUT / f"expert_kit_{a_name}_vs_{b_name}"
         kit.mkdir(exist_ok=True)
-        (a_name, a), (b_name, b) = expert.items()
         rng = random.Random(42)
         with open(kit / "blind_pairs.csv", "w", newline="") as f1, open(kit / "answer_key.csv", "w", newline="") as f2:
             w1, w2 = csv.writer(f1), csv.writer(f2)
