@@ -18,5 +18,15 @@
     "qa_acc": 0.4429,
     "qa_extract": 0.3627,
     "qa_compute": 0.7879
+  },
+  "E2": {
+    "ckpt": "runs/E2-full/stop_0.2583Dstar.pt",
+    "ppl_zh": 8.1504,
+    "ppl_en": 3.3899,
+    "ppl_zh_nobos": 10.2124,
+    "ppl_en_nobos": 4.1346,
+    "qa_acc": 0.4286,
+    "qa_extract": 0.3451,
+    "qa_compute": 0.7879
   }
 }
