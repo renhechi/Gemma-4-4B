@@ -1,3 +1,6 @@
 Loading weights:   0%|          | 0/2076 [00:00<?, ?it/s]Loading weights:  50%|█████     | 1043/2076 [00:00<00:00, 10407.75it/s]Loading weights: 100%|██████████| 2076/2076 [00:00<00:00, 10264.80it/s]
 base {'ckpt': 'base', 'ppl_zh': 7.3902, 'ppl_en': 12.8758, 'ppl_zh_nobos': 81.224, 'ppl_en_nobos': 66.6922, 'qa_acc': 0.4429, 'qa_extract': 0.3627, 'qa_compute': 0.7879}
 Loading weights:   0%|          | 0/2076 [00:00<?, ?it/s]Loading weights:  59%|█████▊    | 1218/2076 [00:00<00:00, 12174.47it/s]Loading weights: 100%|██████████| 2076/2076 [00:00<00:00, 11868.20it/s]
+[load] runs/E1-full/stop_0.2583Dstar.pt: layer 41 p=10240 dose=0.2583 tokens=406323200
+E1 {'ckpt': 'runs/E1-full/stop_0.2583Dstar.pt', 'ppl_zh': 7.0865, 'ppl_en': 3.4421, 'ppl_zh_nobos': 9.7204, 'ppl_en_nobos': 4.3163, 'qa_acc': 0.4429, 'qa_extract': 0.3627, 'qa_compute': 0.7879}
+Loading weights:   0%|          | 0/2076 [00:00<?, ?it/s]Loading weights:  46%|████▌     | 960/2076 [00:00<00:00, 9598.59it/s]Loading weights:  92%|█████████▏| 1920/2076 [00:00<00:00, 8110.05it/s]Loading weights: 100%|██████████| 2076/2076 [00:00<00:00, 8282.66it/s]
