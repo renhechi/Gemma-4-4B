@@ -9,3 +9,4 @@ E2 {'ckpt': 'runs/E2-full/stop_0.2583Dstar.pt', 'ppl_zh': 8.1504, 'ppl_en': 3.38
 Loading weights:   0%|          | 0/2076 [00:00<?, ?it/s]Loading weights:  55%|█████▌    | 1145/2076 [00:00<00:00, 11449.03it/s]Loading weights: 100%|██████████| 2076/2076 [00:00<00:00, 11307.10it/s]
 [load] runs/E3-full/final_step2500.pt: layer -1 p=22608 dose=None tokens=None
 E3 {'ckpt': 'runs/E3-full/final_step2500.pt', 'ppl_zh': 7.8866, 'ppl_en': 3.3792, 'ppl_zh_nobos': 10.0171, 'ppl_en_nobos': 4.0335, 'qa_acc': 0.4257, 'qa_extract': 0.3415, 'qa_compute': 0.7879}
+[kit] → /home/renhe/gemma4_pretrain/docs/results/expert_kit_base_vs_E3
